@@ -11,6 +11,7 @@ The technology choices below are driven by the design principles in the concept 
 | **Heavy data analysis** | First-class statistics and ML ecosystem |
 | **Minimal friction** | Fast, responsive UI for sub-60-second symptom logging |
 | **Open & extensible** | Modular design, easy to swap wearable sources later |
+| **Open-source (AGPLv3)** | Contributor-friendly tech choices, zero-config setup, self-host model |
 
 ---
 
@@ -175,6 +176,68 @@ correlation_cache
 
 ---
 
+## Open-Source Considerations
+
+### License — AGPLv3
+
+FibroSense is licensed under the **GNU Affero General Public License v3.0**. This means:
+
+- Anyone can use, modify, and self-host FibroSense freely
+- Any modified version that is deployed (even as a network service) **must** share its source code under the same license
+- This ensures the project and all derivatives remain open-source, protecting the fibromyalgia community's interests
+
+### Deployment Model — Self-Hosted Instances
+
+Each user runs their own FibroSense instance. This is the ideal model because:
+
+- **No shared server** — No one hosts other people's health data, avoiding liability and privacy concerns
+- **No account system needed** — Eliminates auth complexity and attack surface
+- **SQLite shines here** — Zero-config, no database server to install. Clone + `docker compose up` = running
+- **AGPL compliance is simple** — Each user controls their own instance; no SaaS concerns
+
+### Contributor Experience
+
+| Aspect | Approach |
+|---|---|
+| **Onboarding** | Single `docker compose up` to run the full stack. No manual database setup, no external service dependencies for local dev. |
+| **Language accessibility** | Python and React/TypeScript are the two most widely known languages in open-source. Low barrier to contribution. |
+| **Configuration** | All user-specific settings via `.env` file (Oura API credentials, location for weather, data directory). FastAPI's `pydantic-settings` validates config at startup with clear error messages. |
+| **Code quality gates** | GitHub Actions CI runs Ruff, mypy, ESLint, Prettier, and tests on every PR. Contributors get fast feedback. |
+| **Documentation** | `CONTRIBUTING.md` with setup instructions, architecture overview, and coding standards. Issue templates for bugs and feature requests. |
+
+### Repository Structure (Recommended)
+
+```
+FibroSense/
+├── LICENSE                  (AGPLv3)
+├── README.md
+├── CONTRIBUTING.md
+├── docker-compose.yml
+├── .env.example             (template — never commit real credentials)
+├── .github/
+│   ├── workflows/ci.yml
+│   └── ISSUE_TEMPLATE/
+├── backend/
+│   ├── pyproject.toml
+│   ├── alembic/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── models/
+│   │   ├── routers/
+│   │   ├── services/       (Oura sync, weather sync, analytics)
+│   │   └── config.py       (pydantic-settings)
+│   └── tests/
+└── frontend/
+    ├── package.json
+    ├── src/
+    │   ├── app/
+    │   ├── components/
+    │   └── lib/
+    └── tests/
+```
+
+---
+
 ## Getting Started (Next Steps)
 
 1. **Initialize project structure** — Monorepo with `backend/` and `frontend/` directories
@@ -182,3 +245,4 @@ correlation_cache
 3. **Oura API OAuth flow** — Register app, implement token exchange and storage
 4. **Database schema + migrations** — Define models, run initial Alembic migration
 5. **Symptom logger endpoint + UI** — First vertical slice: log a symptom entry and see it persisted
+6. **Community scaffolding** — `README.md`, `CONTRIBUTING.md`, `.env.example`, GitHub issue templates, CI workflow
