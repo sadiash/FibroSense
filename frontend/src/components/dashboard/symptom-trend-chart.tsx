@@ -1,20 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { SymptomLog } from "@/lib/types";
 import { ChartSkeleton } from "@/components/shared/loading-skeleton";
 import { EmptyState } from "@/components/shared/empty-state";
 import { DateRangePicker } from "@/components/shared/date-range-picker";
 import { subDays, parseISO, isWithinInterval } from "date-fns";
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 
@@ -23,13 +22,51 @@ interface SymptomTrendChartProps {
   isLoading?: boolean;
 }
 
+const metrics = [
+  { key: "Pain", color: "#f43f5e", gradient: "pain" },
+  { key: "Fatigue", color: "#f97316", gradient: "fatigue" },
+  { key: "Brain Fog", color: "#6366f1", gradient: "fog" },
+  { key: "Mood", color: "#10b981", gradient: "mood" },
+];
+
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="glass-strong rounded-xl p-3 shadow-lg border border-border/50">
+      <p className="text-xs font-medium text-muted-foreground mb-2">{label}</p>
+      <div className="space-y-1">
+        {payload.map((entry) => (
+          <div key={entry.name} className="flex items-center gap-2">
+            <div
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-xs text-foreground">{entry.name}</span>
+            <span className="text-xs font-bold ml-auto">{entry.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function SymptomTrendChart({ logs, isLoading }: SymptomTrendChartProps) {
   const [startDate, setStartDate] = useState(subDays(new Date(), 30));
   const [endDate, setEndDate] = useState(new Date());
 
   if (isLoading) return <ChartSkeleton />;
   if (!logs.length)
-    return <EmptyState title="No symptom data" description="Log symptoms to see trends" />;
+    return (
+      <EmptyState
+        title="No symptom data"
+        description="Log symptoms to see trends"
+        icon={
+          <svg className="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
+        }
+      />
+    );
 
   const filtered = logs
     .filter((l) =>
@@ -46,9 +83,19 @@ export function SymptomTrendChart({ logs, isLoading }: SymptomTrendChartProps) {
   }));
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-base">Symptom Trends</CardTitle>
+    <motion.div
+      className="rounded-2xl bg-card border border-border/50 overflow-hidden"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+    >
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 pb-0 gap-3">
+        <div>
+          <h3 className="text-sm font-semibold">Symptom Trends</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Track your symptoms over time
+          </p>
+        </div>
         <DateRangePicker
           startDate={startDate}
           endDate={endDate}
@@ -57,46 +104,68 @@ export function SymptomTrendChart({ logs, isLoading }: SymptomTrendChartProps) {
             setEndDate(e);
           }}
         />
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-            <YAxis domain={[0, 10]} tick={{ fontSize: 12 }} />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="Pain"
-              stroke="hsl(0, 80%, 60%)"
-              strokeWidth={2}
-              dot={false}
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap gap-3 px-5 pt-3">
+        {metrics.map((m) => (
+          <div key={m.key} className="flex items-center gap-1.5">
+            <div
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: m.color }}
             />
-            <Line
-              type="monotone"
-              dataKey="Fatigue"
-              stroke="hsl(30, 80%, 55%)"
-              strokeWidth={2}
-              dot={false}
+            <span className="text-[11px] text-muted-foreground">{m.key}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="p-5 pt-3">
+        <ResponsiveContainer width="100%" height={280}>
+          <AreaChart data={data}>
+            <defs>
+              {metrics.map((m) => (
+                <linearGradient key={m.gradient} id={`grad-${m.gradient}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={m.color} stopOpacity={0.2} />
+                  <stop offset="100%" stopColor={m.color} stopOpacity={0} />
+                </linearGradient>
+              ))}
+            </defs>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="hsl(var(--border))"
+              strokeOpacity={0.5}
             />
-            <Line
-              type="monotone"
-              dataKey="Brain Fog"
-              stroke="hsl(220, 70%, 55%)"
-              strokeWidth={2}
-              dot={false}
+            <XAxis
+              dataKey="date"
+              tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+              axisLine={false}
+              tickLine={false}
+              tickMargin={8}
             />
-            <Line
-              type="monotone"
-              dataKey="Mood"
-              stroke="hsl(150, 60%, 45%)"
-              strokeWidth={2}
-              dot={false}
+            <YAxis
+              domain={[0, 10]}
+              tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+              axisLine={false}
+              tickLine={false}
+              tickMargin={8}
             />
-          </LineChart>
+            <Tooltip content={<CustomTooltip />} />
+            {metrics.map((m) => (
+              <Area
+                key={m.key}
+                type="monotone"
+                dataKey={m.key}
+                stroke={m.color}
+                strokeWidth={2}
+                fill={`url(#grad-${m.gradient})`}
+                dot={false}
+                activeDot={{ r: 4, strokeWidth: 2, fill: "hsl(var(--card))" }}
+              />
+            ))}
+          </AreaChart>
         </ResponsiveContainer>
-      </CardContent>
-    </Card>
+      </div>
+    </motion.div>
   );
 }

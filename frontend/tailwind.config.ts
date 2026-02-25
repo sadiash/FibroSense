@@ -49,13 +49,32 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
+  			sidebar: 'hsl(var(--sidebar))',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+  		animation: {
+  			'shimmer': 'shimmer 1.5s ease-in-out infinite',
+  			'gradient-shift': 'gradient-shift 6s ease infinite',
+  			'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
+  			'float': 'float 6s ease-in-out infinite',
+  			'blob-1': 'blob-1 20s ease-in-out infinite',
+  			'blob-2': 'blob-2 25s ease-in-out infinite',
+  			'spin-slow': 'spin-slow 20s linear infinite',
+  		},
+  		keyframes: {
+  			shimmer: {
+  				'0%': { backgroundPosition: '200% 0' },
+  				'100%': { backgroundPosition: '-200% 0' },
+  			},
+  		},
+  		backgroundImage: {
+  			'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],

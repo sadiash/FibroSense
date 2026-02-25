@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import { stagger, fadeUp } from "@/lib/animations";
 import { CorrelationHeatmap } from "@/components/correlations/correlation-heatmap";
 import { ScatterPlot } from "@/components/correlations/scatter-plot";
 import { LaggedCorrelationPanel } from "@/components/correlations/lagged-correlation-panel";
@@ -64,24 +66,39 @@ export default function CorrelationsPage() {
   }, [selectedA, selectedB, logs, biometrics, contextual]);
 
   return (
-    <div className="space-y-6">
-      <CorrelationHeatmap
-        correlations={correlations ?? []}
-        isLoading={isLoading}
-        onCellClick={(a, b) => {
-          setSelectedA(a);
-          setSelectedB(b);
-        }}
-      />
+    <motion.div
+      variants={stagger}
+      initial="hidden"
+      animate="show"
+      className="space-y-6"
+    >
+      {/* Page header */}
+      <motion.div variants={fadeUp}>
+        <h2 className="text-lg font-bold">Insights & Correlations</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Discover patterns between your symptoms, biometrics, and environment
+        </p>
+      </motion.div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <motion.div variants={fadeUp}>
+        <CorrelationHeatmap
+          correlations={correlations ?? []}
+          isLoading={isLoading}
+          onCellClick={(a, b) => {
+            setSelectedA(a);
+            setSelectedB(b);
+          }}
+        />
+      </motion.div>
+
+      <motion.div variants={fadeUp} className="grid md:grid-cols-2 gap-4">
         <ScatterPlot
           metricA={selectedA}
           metricB={selectedB}
           data={scatterData}
         />
         <LaggedCorrelationPanel />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

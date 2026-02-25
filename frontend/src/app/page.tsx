@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { stagger, fadeUp } from "@/lib/animations";
 import { SummaryCard } from "@/components/dashboard/summary-card";
 import { SymptomTrendChart } from "@/components/dashboard/symptom-trend-chart";
 import { BiometricChart } from "@/components/dashboard/biometric-chart";
@@ -19,16 +21,17 @@ export default function DashboardPage() {
   const avgPain =
     recentLogs.length > 0
       ? (
-          recentLogs.reduce((s, l) => s + l.pain_severity, 0) / recentLogs.length
+          recentLogs.reduce((s, l) => s + l.pain_severity, 0) /
+          recentLogs.length
         ).toFixed(1)
-      : "—";
+      : "\u2014";
   const avgFatigue =
     recentLogs.length > 0
       ? (
           recentLogs.reduce((s, l) => s + l.fatigue_severity, 0) /
           recentLogs.length
         ).toFixed(1)
-      : "—";
+      : "\u2014";
   const avgSleep =
     biometrics && biometrics.length > 0
       ? (
@@ -37,7 +40,7 @@ export default function DashboardPage() {
             .reduce((s, b) => s + b.sleep_duration, 0) /
           Math.min(7, biometrics.length)
         ).toFixed(1)
-      : "—";
+      : "\u2014";
   const avgHrv =
     biometrics && biometrics.length > 0
       ? Math.round(
@@ -46,11 +49,17 @@ export default function DashboardPage() {
             .reduce((s, b) => s + b.hrv_rmssd, 0) /
             Math.min(7, biometrics.length)
         ).toString()
-      : "—";
+      : "\u2014";
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <motion.div
+      variants={stagger}
+      initial="hidden"
+      animate="show"
+      className="space-y-6"
+    >
+      {/* Summary Cards */}
+      <motion.div variants={fadeUp} className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {logsLoading || bioLoading ? (
           <>
             <CardSkeleton />
@@ -60,24 +69,78 @@ export default function DashboardPage() {
           </>
         ) : (
           <>
-            <SummaryCard title="Avg Pain (7d)" value={avgPain} unit="/10" trend="stable" />
-            <SummaryCard title="Avg Fatigue (7d)" value={avgFatigue} unit="/10" trend="up" />
-            <SummaryCard title="Avg Sleep (7d)" value={avgSleep} unit="hrs" trend="down" />
-            <SummaryCard title="Avg HRV (7d)" value={avgHrv} unit="ms" trend="stable" />
+            <SummaryCard
+              title="Avg Pain"
+              value={avgPain}
+              unit="/10"
+              trend="stable"
+              color="rose"
+              icon={
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              }
+            />
+            <SummaryCard
+              title="Avg Fatigue"
+              value={avgFatigue}
+              unit="/10"
+              trend="up"
+              color="amber"
+              icon={
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18.36 6.64a9 9 0 11-12.73 0M12 2v4" />
+                </svg>
+              }
+            />
+            <SummaryCard
+              title="Avg Sleep"
+              value={avgSleep}
+              unit="hrs"
+              trend="down"
+              color="violet"
+              icon={
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                </svg>
+              }
+            />
+            <SummaryCard
+              title="Avg HRV"
+              value={avgHrv}
+              unit="ms"
+              trend="stable"
+              color="teal"
+              icon={
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+              }
+            />
           </>
         )}
-      </div>
+      </motion.div>
 
-      <SymptomTrendChart logs={logs ?? []} isLoading={logsLoading} />
+      {/* Symptom Trends */}
+      <motion.div variants={fadeUp}>
+        <SymptomTrendChart logs={logs ?? []} isLoading={logsLoading} />
+      </motion.div>
 
-      <BodyMapHeatmap logs={logs ?? []} isLoading={logsLoading} />
+      {/* Body Map Heatmap */}
+      <motion.div variants={fadeUp}>
+        <BodyMapHeatmap logs={logs ?? []} isLoading={logsLoading} />
+      </motion.div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      {/* Biometrics & Weather */}
+      <motion.div variants={fadeUp} className="grid md:grid-cols-2 gap-4">
         <BiometricChart biometrics={biometrics ?? []} isLoading={bioLoading} />
         <WeatherCard data={contextual ?? []} isLoading={ctxLoading} />
-      </div>
+      </motion.div>
 
-      <FlareTimeline logs={logs ?? []} />
-    </div>
+      {/* Flare Timeline */}
+      <motion.div variants={fadeUp}>
+        <FlareTimeline logs={logs ?? []} />
+      </motion.div>
+    </motion.div>
   );
 }
