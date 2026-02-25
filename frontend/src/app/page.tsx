@@ -56,7 +56,7 @@ export default function DashboardPage() {
       variants={stagger}
       initial="hidden"
       animate="show"
-      className="space-y-6"
+      className="space-y-4 sm:space-y-6"
     >
       {/* Summary Cards */}
       <motion.div variants={fadeUp} className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
@@ -132,7 +132,7 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Biometrics & Weather */}
-      <motion.div variants={fadeUp} className="grid md:grid-cols-2 gap-4">
+      <motion.div variants={fadeUp} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         <BiometricChart biometrics={biometrics ?? []} isLoading={bioLoading} />
         <WeatherCard data={contextual ?? []} isLoading={ctxLoading} />
       </motion.div>

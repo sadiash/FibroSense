@@ -28,14 +28,14 @@ export function DateRangePicker({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
       {presets.map((preset) => (
         <Button
           key={preset.label}
           variant="outline"
           size="sm"
           className={cn(
-            "text-xs",
+            "text-xs h-7 px-2 sm:h-8 sm:px-3",
             Math.round(
               (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
             ) === preset.days && "bg-primary text-primary-foreground"
@@ -47,7 +47,7 @@ export function DateRangePicker({
       ))}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="text-xs">
+          <Button variant="outline" size="sm" className="text-xs h-7 px-2 sm:h-8 sm:px-3">
             {format(startDate, "MMM d")} - {format(endDate, "MMM d")}
           </Button>
         </PopoverTrigger>

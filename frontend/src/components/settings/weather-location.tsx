@@ -137,7 +137,7 @@ export function WeatherLocation() {
             </div>
 
             {loaded && (
-              <div className="rounded-md overflow-hidden border h-[300px]">
+              <div className="rounded-md overflow-hidden border h-[200px] sm:h-[300px]">
                 <LocationMap lat={lat} lon={lon} onLocationChange={handleMapClick} />
               </div>
             )}

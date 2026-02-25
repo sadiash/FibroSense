@@ -119,8 +119,8 @@ export function SymptomTrendChart({ logs, isLoading }: SymptomTrendChartProps) {
         ))}
       </div>
 
-      <div className="p-5 pt-3">
-        <ResponsiveContainer width="100%" height={280}>
+      <div className="p-3 sm:p-5 pt-3">
+        <ResponsiveContainer width="100%" height={220} className="sm:!h-[280px]">
           <AreaChart data={data}>
             <defs>
               {metrics.map((m) => (

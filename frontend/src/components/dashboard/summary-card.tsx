@@ -117,7 +117,7 @@ export function SummaryCard({
 
   return (
     <motion.div
-      className="relative rounded-2xl bg-card border border-border/50 p-4 overflow-hidden card-hover group"
+      className="relative rounded-2xl bg-card border border-border/50 p-3 sm:p-4 overflow-hidden card-hover group"
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
@@ -140,7 +140,7 @@ export function SummaryCard({
         </div>
 
         <div className="flex items-end gap-2">
-          <span className="text-3xl font-bold tracking-tight">
+          <span className="text-2xl sm:text-3xl font-bold tracking-tight">
             <AnimatedCounter value={value} />
           </span>
           {unit && (

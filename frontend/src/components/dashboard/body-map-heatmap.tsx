@@ -123,9 +123,9 @@ export function BodyMapHeatmap({ logs, isLoading }: BodyMapHeatmapProps) {
         />
       </div>
 
-      <div className="p-5">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="flex gap-4 flex-1 min-w-0">
+      <div className="p-3 sm:p-5">
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
+          <div className="flex gap-2 sm:gap-4 flex-1 min-w-0">
             <div className="flex-1 min-w-0 text-center">
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
                 Front

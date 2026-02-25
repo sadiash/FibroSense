@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import * as d3 from "d3";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { CorrelationResult } from "@/lib/types";
 import { ChartSkeleton } from "@/components/shared/loading-skeleton";
+import { cn } from "@/lib/utils";
 
 interface CorrelationHeatmapProps {
   correlations: CorrelationResult[];
   onCellClick?: (metricA: string, metricB: string) => void;
+  selectedA?: string;
+  selectedB?: string;
   isLoading?: boolean;
 }
 
@@ -26,108 +28,264 @@ const metricLabels: Record<string, string> = {
   humidity: "Humidity",
 };
 
+const metricCategories: Record<string, string> = {
+  pain_severity: "symptoms",
+  fatigue_severity: "symptoms",
+  brain_fog: "symptoms",
+  mood: "symptoms",
+  sleep_duration: "biometrics",
+  sleep_efficiency: "biometrics",
+  hrv_rmssd: "biometrics",
+  resting_hr: "biometrics",
+  barometric_pressure: "weather",
+  temperature: "weather",
+  humidity: "weather",
+};
+
+const categoryDotColors: Record<string, string> = {
+  symptoms: "bg-rose-500",
+  biometrics: "bg-violet-500",
+  weather: "bg-sky-500",
+};
+
+function cellBg(val: number): string {
+  const abs = Math.abs(val);
+  if (abs < 0.1) return "bg-muted/20";
+  if (val > 0) {
+    if (abs > 0.6) return "bg-emerald-500 text-white";
+    if (abs > 0.4) return "bg-emerald-500/50";
+    if (abs > 0.2) return "bg-emerald-500/25";
+    return "bg-emerald-500/10";
+  }
+  if (abs > 0.6) return "bg-rose-500 text-white";
+  if (abs > 0.4) return "bg-rose-500/50";
+  if (abs > 0.2) return "bg-rose-500/25";
+  return "bg-rose-500/10";
+}
+
+// Fixed metric ordering so it's always consistent
+const METRIC_ORDER = [
+  "pain_severity",
+  "fatigue_severity",
+  "brain_fog",
+  "mood",
+  "sleep_duration",
+  "sleep_efficiency",
+  "hrv_rmssd",
+  "resting_hr",
+  "barometric_pressure",
+  "temperature",
+  "humidity",
+];
+
 export function CorrelationHeatmap({
   correlations,
   onCellClick,
+  selectedA,
+  selectedB,
   isLoading,
 }: CorrelationHeatmapProps) {
-  const svgRef = useRef<SVGSVGElement>(null);
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+  const [hoveredCol, setHoveredCol] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!svgRef.current || !correlations.length) return;
-
-    const metrics = Array.from(
-      new Set(correlations.flatMap((c) => [c.metric_a, c.metric_b]))
+  const { metrics, corrMap } = useMemo(() => {
+    const available = new Set(
+      correlations.flatMap((c) => [c.metric_a, c.metric_b])
     );
-
-    const margin = { top: 70, right: 10, bottom: 10, left: 80 };
-    const cellSize = 32;
-    const width = margin.left + metrics.length * cellSize + margin.right;
-    const height = margin.top + metrics.length * cellSize + margin.bottom;
-
-    const svg = d3.select(svgRef.current);
-    svg.selectAll("*").remove();
-    svg.attr("viewBox", `0 0 ${width} ${height}`);
-
-    const colorScale = d3
-      .scaleSequential(d3.interpolateRdBu)
-      .domain([1, -1]);
-
-    const corrMap = new Map<string, number>();
+    const m = METRIC_ORDER.filter((k) => available.has(k));
+    const map = new Map<string, number>();
     correlations.forEach((c) => {
-      corrMap.set(`${c.metric_a}-${c.metric_b}`, c.correlation_coefficient);
-      corrMap.set(`${c.metric_b}-${c.metric_a}`, c.correlation_coefficient);
+      map.set(`${c.metric_a}-${c.metric_b}`, c.correlation_coefficient);
+      map.set(`${c.metric_b}-${c.metric_a}`, c.correlation_coefficient);
     });
-
-    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
-
-    // Column labels
-    g.selectAll(".col-label")
-      .data(metrics)
-      .join("text")
-      .attr("class", "col-label")
-      .attr("x", (_, i) => i * cellSize + cellSize / 2)
-      .attr("y", -10)
-      .attr("text-anchor", "end")
-      .attr("transform", (_, i) => `rotate(-45, ${i * cellSize + cellSize / 2}, -10)`)
-      .attr("font-size", "9px")
-      .attr("fill", "currentColor")
-      .text((d) => metricLabels[d] || d);
-
-    // Row labels
-    g.selectAll(".row-label")
-      .data(metrics)
-      .join("text")
-      .attr("class", "row-label")
-      .attr("x", -6)
-      .attr("y", (_, i) => i * cellSize + cellSize / 2 + 3)
-      .attr("text-anchor", "end")
-      .attr("font-size", "9px")
-      .attr("fill", "currentColor")
-      .text((d) => metricLabels[d] || d);
-
-    // Cells
-    metrics.forEach((rowMetric, ri) => {
-      metrics.forEach((colMetric, ci) => {
-        const key = `${rowMetric}-${colMetric}`;
-        const val = rowMetric === colMetric ? 1 : (corrMap.get(key) ?? 0);
-
-        g.append("rect")
-          .attr("x", ci * cellSize)
-          .attr("y", ri * cellSize)
-          .attr("width", cellSize - 2)
-          .attr("height", cellSize - 2)
-          .attr("rx", 4)
-          .attr("fill", colorScale(val))
-          .attr("opacity", 0.85)
-          .style("cursor", "pointer")
-          .on("click", () => {
-            if (onCellClick && rowMetric !== colMetric) {
-              onCellClick(rowMetric, colMetric);
-            }
-          });
-
-        g.append("text")
-          .attr("x", ci * cellSize + (cellSize - 2) / 2)
-          .attr("y", ri * cellSize + (cellSize - 2) / 2 + 4)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "8px")
-          .attr("fill", Math.abs(val) > 0.5 ? "white" : "currentColor")
-          .text(val.toFixed(2));
-      });
-    });
-  }, [correlations, onCellClick]);
+    return { metrics: m, corrMap: map };
+  }, [correlations]);
 
   if (isLoading) return <ChartSkeleton />;
 
+  if (!correlations.length) {
+    return (
+      <div className="rounded-2xl bg-card border border-border/50 p-8 text-center">
+        <p className="text-sm text-muted-foreground">
+          No correlation data yet. Log more symptoms to discover patterns.
+        </p>
+      </div>
+    );
+  }
+
+  // Group metrics by category for section headers
+  let lastCategory = "";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Correlation Matrix</CardTitle>
-      </CardHeader>
-      <CardContent className="overflow-x-auto flex justify-center">
-        <svg ref={svgRef} className="max-w-[520px]" />
-      </CardContent>
-    </Card>
+    <div className="rounded-2xl bg-card border border-border/50 overflow-hidden">
+      <div className="p-4 sm:p-5 pb-3">
+        <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+              <svg className="h-4 w-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M3 9h18M9 3v18" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold">Correlation Matrix</h3>
+              <p className="text-xs text-muted-foreground">
+                Click any cell to explore in detail
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex items-center gap-1.5">
+              <div className="h-3 w-6 rounded-sm bg-emerald-500/50" />
+              <span className="text-[10px] text-muted-foreground">Positive</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-3 w-6 rounded-sm bg-muted/30" />
+              <span className="text-[10px] text-muted-foreground">None</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-3 w-6 rounded-sm bg-rose-500/50" />
+              <span className="text-[10px] text-muted-foreground">Negative</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="pb-5 overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-5">
+        <table className="w-full border-collapse min-w-[400px]">
+          <thead>
+            <tr>
+              <th className="w-20 sm:w-28" />
+              {metrics.map((col) => {
+                const cat = metricCategories[col] ?? "symptoms";
+                return (
+                  <th
+                    key={col}
+                    className={cn(
+                      "text-center pb-1.5 px-0.5 transition-opacity",
+                      hoveredCol && hoveredCol !== col && "opacity-40"
+                    )}
+                  >
+                    <div className="flex flex-col items-center gap-1">
+                      <div
+                        className={cn(
+                          "h-1 w-3 rounded-full",
+                          categoryDotColors[cat]
+                        )}
+                      />
+                      <span className="text-[8px] sm:text-[9px] text-muted-foreground font-medium leading-tight block max-w-[36px] sm:max-w-[44px]">
+                        {metricLabels[col] ?? col}
+                      </span>
+                    </div>
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {metrics.map((row) => {
+              const cat = metricCategories[row] ?? "symptoms";
+              const showSeparator = cat !== lastCategory && lastCategory !== "";
+              lastCategory = cat;
+
+              return (
+                <tr
+                  key={row}
+                  className={cn(
+                    "group",
+                    hoveredRow && hoveredRow !== row && "opacity-40",
+                    showSeparator && "border-t border-border/30"
+                  )}
+                  style={{ transition: "opacity 0.15s ease" }}
+                >
+                  <td
+                    className="pr-2 py-0.5"
+                    onMouseEnter={() => setHoveredRow(row)}
+                    onMouseLeave={() => setHoveredRow(null)}
+                  >
+                    <div className="flex items-center gap-1.5 justify-end">
+                      <span className="text-[10px] text-muted-foreground font-medium text-right truncate">
+                        {metricLabels[row] ?? row}
+                      </span>
+                      <div
+                        className={cn(
+                          "h-1.5 w-1.5 rounded-full shrink-0",
+                          categoryDotColors[cat]
+                        )}
+                      />
+                    </div>
+                  </td>
+                  {metrics.map((col) => {
+                    const isDiag = row === col;
+                    const val = isDiag ? 1 : (corrMap.get(`${row}-${col}`) ?? 0);
+                    const isSelected =
+                      (selectedA === row && selectedB === col) ||
+                      (selectedA === col && selectedB === row);
+
+                    return (
+                      <td
+                        key={col}
+                        className="p-0.5"
+                        onMouseEnter={() => {
+                          setHoveredRow(row);
+                          setHoveredCol(col);
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredRow(null);
+                          setHoveredCol(null);
+                        }}
+                      >
+                        {isDiag ? (
+                          <div className="h-7 sm:h-9 rounded-md bg-muted/10 flex items-center justify-center">
+                            <span className="text-[8px] sm:text-[9px] text-muted-foreground/30">
+                              1.0
+                            </span>
+                          </div>
+                        ) : (
+                          <motion.button
+                            className={cn(
+                              "w-full h-7 sm:h-9 rounded-md flex items-center justify-center text-[9px] sm:text-[10px] font-mono font-semibold transition-all cursor-pointer",
+                              cellBg(val),
+                              isSelected
+                                ? "ring-2 ring-primary ring-offset-1 ring-offset-card shadow-md"
+                                : "hover:ring-1 hover:ring-primary/30"
+                            )}
+                            onClick={() => onCellClick?.(row, col)}
+                            whileTap={{ scale: 0.92 }}
+                          >
+                            {val.toFixed(2)}
+                          </motion.button>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        {/* Category legend */}
+        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/30">
+          {[
+            { key: "symptoms", label: "Symptoms" },
+            { key: "biometrics", label: "Biometrics" },
+            { key: "weather", label: "Weather" },
+          ].map((c) => (
+            <div key={c.key} className="flex items-center gap-1.5">
+              <div
+                className={cn(
+                  "h-2 w-2 rounded-full",
+                  categoryDotColors[c.key]
+                )}
+              />
+              <span className="text-[10px] text-muted-foreground">
+                {c.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

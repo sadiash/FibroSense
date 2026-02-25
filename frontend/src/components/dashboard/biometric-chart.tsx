@@ -88,8 +88,8 @@ export function BiometricChart({ biometrics, isLoading }: BiometricChartProps) {
         </div>
       </div>
 
-      <div className="p-5 pt-3">
-        <ResponsiveContainer width="100%" height={260}>
+      <div className="p-3 sm:p-5 pt-3">
+        <ResponsiveContainer width="100%" height={200} className="sm:!h-[260px]">
           <ComposedChart data={data}>
             <defs>
               <linearGradient id="grad-sleep" x1="0" y1="0" x2="0" y2="1">

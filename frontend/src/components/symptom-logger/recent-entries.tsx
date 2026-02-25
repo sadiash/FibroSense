@@ -40,7 +40,7 @@ export function RecentEntries({ entries }: RecentEntriesProps) {
                 )}
               </div>
             </div>
-            <div className="mt-1 flex gap-3 text-xs text-muted-foreground">
+            <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
               <span>Pain: {entry.pain_severity}</span>
               <span>Fatigue: {entry.fatigue_severity}</span>
               <span>Fog: {entry.brain_fog}</span>

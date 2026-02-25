@@ -23,13 +23,13 @@ function WeatherMetric({
 }) {
   return (
     <motion.div
-      className="flex flex-col items-center p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+      className="flex flex-col items-center p-2 sm:p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay }}
     >
       <div className="text-muted-foreground mb-1">{icon}</div>
-      <p className="text-lg font-bold">{value}</p>
+      <p className="text-base sm:text-lg font-bold">{value}</p>
       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
         {unit}
       </p>
@@ -69,7 +69,7 @@ export function WeatherCard({ data, isLoading }: WeatherCardProps) {
       <div className="p-5">
         {latest ? (
           <div className="space-y-4">
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
               <WeatherMetric
                 value={latest.barometric_pressure?.toFixed(0) ?? "--"}
                 unit="hPa"

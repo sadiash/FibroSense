@@ -104,9 +104,9 @@ export function MedicationSettings() {
             {medications.map((med) => (
               <li
                 key={med.id}
-                className="flex items-center justify-between rounded-md border px-3 py-2"
+                className="flex items-start sm:items-center justify-between gap-2 rounded-md border px-3 py-2"
               >
-                <div>
+                <div className="min-w-0">
                   <span className="text-sm font-medium">{med.name}</span>
                   {med.dosage && (
                     <span className="ml-2 text-xs text-muted-foreground">
@@ -114,7 +114,7 @@ export function MedicationSettings() {
                     </span>
                   )}
                   {med.frequency && (
-                    <span className="ml-2 text-xs text-muted-foreground">
+                    <span className="ml-1 sm:ml-2 text-xs text-muted-foreground">
                       ({med.frequency})
                     </span>
                   )}
@@ -123,7 +123,7 @@ export function MedicationSettings() {
                   variant="ghost"
                   size="sm"
                   onClick={() => deleteMed.mutate(med.id)}
-                  className="text-muted-foreground hover:text-destructive"
+                  className="text-muted-foreground hover:text-destructive shrink-0"
                 >
                   Remove
                 </Button>
