@@ -5,6 +5,7 @@ import { SymptomTrendChart } from "@/components/dashboard/symptom-trend-chart";
 import { BiometricChart } from "@/components/dashboard/biometric-chart";
 import { WeatherCard } from "@/components/dashboard/weather-card";
 import { FlareTimeline } from "@/components/dashboard/flare-timeline";
+import { BodyMapHeatmap } from "@/components/dashboard/body-map-heatmap";
 import { useSymptomLogs } from "@/lib/hooks/use-symptom-logs";
 import { useBiometrics, useContextualData } from "@/lib/hooks/use-biometrics";
 import { CardSkeleton } from "@/components/shared/loading-skeleton";
@@ -68,6 +69,8 @@ export default function DashboardPage() {
       </div>
 
       <SymptomTrendChart logs={logs ?? []} isLoading={logsLoading} />
+
+      <BodyMapHeatmap logs={logs ?? []} isLoading={logsLoading} />
 
       <div className="grid md:grid-cols-2 gap-4">
         <BiometricChart biometrics={biometrics ?? []} isLoading={bioLoading} />
