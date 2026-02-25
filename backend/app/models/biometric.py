@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, Float, Integer, Text
+from sqlalchemy import CheckConstraint, Float, Index, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, TimestampMixin
@@ -26,4 +26,5 @@ class BiometricReading(TimestampMixin, Base):
         ),
         CheckConstraint("deep_sleep_pct >= 0 AND deep_sleep_pct <= 100", name="ck_deep_sleep_pct"),
         CheckConstraint("rem_sleep_pct >= 0 AND rem_sleep_pct <= 100", name="ck_rem_sleep_pct"),
+        Index("idx_biometric_readings_source", "source"),
     )

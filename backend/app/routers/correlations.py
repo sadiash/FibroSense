@@ -48,5 +48,20 @@ async def get_lagged_correlations(
     max_lag: int = Query(7, ge=0, le=30),
     session: AsyncSession = Depends(get_session),
 ) -> list[CorrelationCache]:
+    # Check cache first
+    stmt = (
+        select(CorrelationCache)
+        .where(
+            CorrelationCache.metric_a == metric_a,
+            CorrelationCache.metric_b == metric_b,
+            CorrelationCache.lag_days <= max_lag,
+        )
+        .order_by(CorrelationCache.lag_days)
+    )
+    result = await session.execute(stmt)
+    cached = list(result.scalars().all())
+    if cached:
+        return cached
+
     service = AnalyticsService(session)
     return await service.compute_lagged_correlations(metric_a, metric_b, max_lag)

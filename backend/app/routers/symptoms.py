@@ -12,13 +12,6 @@ from app.schemas.symptom import SymptomLogCreate, SymptomLogResponse, SymptomLog
 router = APIRouter(prefix="/api/symptoms", tags=["symptoms"])
 
 
-def _deserialize_log(log: SymptomLog) -> None:
-    """Deserialize JSON text fields on a SymptomLog instance in-place."""
-    log.pain_locations = json.loads(log.pain_locations)  # type: ignore[assignment]
-    if log.missed_medications:
-        log.missed_medications = json.loads(log.missed_medications)  # type: ignore[assignment]
-
-
 @router.post("", response_model=SymptomLogResponse, status_code=201)
 async def create_symptom_log(
     data: SymptomLogCreate, session: AsyncSession = Depends(get_session)
@@ -47,7 +40,6 @@ async def create_symptom_log(
     session.add(log)
     await session.commit()
     await session.refresh(log)
-    _deserialize_log(log)
     return log
 
 
@@ -63,10 +55,7 @@ async def list_symptom_logs(
     if end_date:
         stmt = stmt.where(SymptomLog.date <= end_date)
     result = await session.execute(stmt)
-    logs = list(result.scalars().all())
-    for log in logs:
-        _deserialize_log(log)
-    return logs
+    return list(result.scalars().all())
 
 
 @router.get("/{log_id}", response_model=SymptomLogResponse)
@@ -76,7 +65,6 @@ async def get_symptom_log(
     log = await session.get(SymptomLog, log_id)
     if not log:
         raise HTTPException(status_code=404, detail="Symptom log not found")
-    _deserialize_log(log)
     return log
 
 
@@ -111,7 +99,6 @@ async def update_symptom_log(
     log.updated_at = datetime.now(timezone.utc).isoformat()
     await session.commit()
     await session.refresh(log)
-    _deserialize_log(log)
     return log
 
 

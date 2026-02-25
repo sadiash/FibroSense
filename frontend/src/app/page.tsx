@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { SummaryCard } from "@/components/dashboard/summary-card";
@@ -18,38 +19,30 @@ export default function DashboardPage() {
   const { data: contextual, isLoading: ctxLoading } = useContextualData();
 
   const recentLogs = logs?.slice(0, 7) ?? [];
-  const avgPain =
-    recentLogs.length > 0
-      ? (
-          recentLogs.reduce((s, l) => s + l.pain_severity, 0) /
-          recentLogs.length
-        ).toFixed(1)
-      : "\u2014";
-  const avgFatigue =
-    recentLogs.length > 0
-      ? (
-          recentLogs.reduce((s, l) => s + l.fatigue_severity, 0) /
-          recentLogs.length
-        ).toFixed(1)
-      : "\u2014";
-  const avgSleep =
-    biometrics && biometrics.length > 0
-      ? (
-          biometrics
-            .slice(0, 7)
-            .reduce((s, b) => s + b.sleep_duration, 0) /
-          Math.min(7, biometrics.length)
-        ).toFixed(1)
-      : "\u2014";
-  const avgHrv =
-    biometrics && biometrics.length > 0
-      ? Math.round(
-          biometrics
-            .slice(0, 7)
-            .reduce((s, b) => s + b.hrv_rmssd, 0) /
-            Math.min(7, biometrics.length)
-        ).toString()
-      : "\u2014";
+
+  const { avgPain, avgFatigue } = useMemo(() => {
+    if (recentLogs.length === 0) return { avgPain: "\u2014", avgFatigue: "\u2014" };
+    return {
+      avgPain: (
+        recentLogs.reduce((s, l) => s + l.pain_severity, 0) /
+        recentLogs.length
+      ).toFixed(1),
+      avgFatigue: (
+        recentLogs.reduce((s, l) => s + l.fatigue_severity, 0) /
+        recentLogs.length
+      ).toFixed(1),
+    };
+  }, [recentLogs]);
+
+  const { avgSleep, avgHrv } = useMemo(() => {
+    if (!biometrics || biometrics.length === 0) return { avgSleep: "\u2014", avgHrv: "\u2014" };
+    const recent = biometrics.slice(0, 7);
+    const count = recent.length;
+    return {
+      avgSleep: (recent.reduce((s, b) => s + b.sleep_duration, 0) / count).toFixed(1),
+      avgHrv: Math.round(recent.reduce((s, b) => s + b.hrv_rmssd, 0) / count).toString(),
+    };
+  }, [biometrics]);
 
   return (
     <motion.div

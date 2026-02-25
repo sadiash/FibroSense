@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+import json
+
+from pydantic import BaseModel, Field, model_validator
 
 
 class PainLocationEntry(BaseModel):
@@ -49,3 +51,15 @@ class SymptomLogResponse(BaseModel):
     updated_at: str
 
     model_config = {"from_attributes": True}
+
+    @model_validator(mode="before")
+    @classmethod
+    def parse_json_fields(cls, data):  # type: ignore[no-untyped-def]
+        if hasattr(data, "__dict__"):
+            locs = getattr(data, "pain_locations", None)
+            if isinstance(locs, str):
+                object.__setattr__(data, "pain_locations", json.loads(locs))
+            meds = getattr(data, "missed_medications", None)
+            if isinstance(meds, str):
+                object.__setattr__(data, "missed_medications", json.loads(meds))
+        return data

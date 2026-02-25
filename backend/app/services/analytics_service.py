@@ -168,4 +168,8 @@ class AnalyticsService:
             )
             results.append(cache)
 
+        for cache in results:
+            self.session.add(cache)
+        await self.session.commit()
+
         return results

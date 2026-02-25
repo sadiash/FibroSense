@@ -14,6 +14,9 @@ def set_sqlite_pragmas(dbapi_connection, _connection_record):  # type: ignore[no
     cursor.execute("PRAGMA journal_mode=WAL")
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.execute("PRAGMA busy_timeout=5000")
+    cursor.execute("PRAGMA synchronous=NORMAL")
+    cursor.execute("PRAGMA cache_size=-8000")
+    cursor.execute("PRAGMA temp_store=MEMORY")
     cursor.close()
 
 
