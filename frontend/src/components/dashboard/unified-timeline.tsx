@@ -62,7 +62,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   );
 }
 
-export function UnifiedTimeline({ logs, biometrics, contextual, isLoading }: UnifiedTimelineProps) {
+export function UnifiedTimeline({ logs, biometrics, contextual, isLoading: _isLoading }: UnifiedTimelineProps) {
   const [selected, setSelected] = useState<string[]>(["pain_severity", "sleep_duration"]);
   const [startDate, setStartDate] = useState(subDays(new Date(), 30));
   const [endDate, setEndDate] = useState(new Date());

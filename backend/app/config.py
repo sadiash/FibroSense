@@ -1,3 +1,4 @@
+import os
 from pydantic_settings import BaseSettings
 
 
@@ -9,6 +10,12 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:3000"]
 
     model_config = {"env_file": ".env", "extra": "ignore"}
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        env_origins = os.getenv("CORS_ORIGINS")
+        if env_origins:
+            self.cors_origins = [o.strip() for o in env_origins.split(",")]
 
 
 settings = Settings()
