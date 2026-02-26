@@ -1,3 +1,7 @@
+import os
+import subprocess
+import sys
+
 from fastapi import APIRouter, Depends
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -60,6 +64,25 @@ async def get_demo_data_status(
         medications_count=medications or 0,
         sync_log_count=sync_logs or 0,
     )
+
+
+@router.post("/seed")
+async def seed_demo_data(
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    """Seed demo data if the database is empty."""
+    count = await session.scalar(
+        select(func.count()).select_from(SymptomLog)
+    )
+    if count and count > 0:
+        return {"status": "skipped", "message": "Database already has data"}
+
+    seed_script = os.path.join(os.path.dirname(__file__), "..", "..", "scripts", "seed_fictitious_data.py")
+    try:
+        subprocess.run([sys.executable, seed_script], check=True)
+        return {"status": "seeded"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 @router.delete("", response_model=DemoDataClearResponse)
