@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, CheckConstraint, Index, Integer, Text
+from sqlalchemy import Boolean, CheckConstraint, ForeignKey, Index, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, TimestampMixin
@@ -8,6 +8,7 @@ class SymptomLog(TimestampMixin, Base):
     __tablename__ = "symptom_logs"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     date: Mapped[str] = mapped_column(Text, nullable=False)
     pain_severity: Mapped[int] = mapped_column(Integer, nullable=False)
     pain_locations: Mapped[str] = mapped_column(Text, nullable=False)  # JSON array
@@ -31,5 +32,6 @@ class SymptomLog(TimestampMixin, Base):
             name="ck_flare_severity",
         ),
         Index("idx_symptom_logs_date", "date"),
+        Index("idx_symptom_logs_user_date", "user_id", "date"),
         Index("idx_symptom_logs_is_flare", "is_flare", sqlite_where=(is_flare == True)),  # noqa: E712
     )

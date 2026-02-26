@@ -21,11 +21,14 @@ ALL_METRICS = SYMPTOM_METRICS + BIOMETRIC_METRICS + WEATHER_METRICS
 
 
 class AnalyticsService:
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: AsyncSession, user_id: int) -> None:
         self.session = session
+        self.user_id = user_id
 
     async def _build_dataframe(self) -> pd.DataFrame:
-        symptom_result = await self.session.execute(select(SymptomLog))
+        symptom_result = await self.session.execute(
+            select(SymptomLog).where(SymptomLog.user_id == self.user_id)
+        )
         symptoms = symptom_result.scalars().all()
         symptom_df = pd.DataFrame(
             [
@@ -40,7 +43,9 @@ class AnalyticsService:
             ]
         )
 
-        bio_result = await self.session.execute(select(BiometricReading))
+        bio_result = await self.session.execute(
+            select(BiometricReading).where(BiometricReading.user_id == self.user_id)
+        )
         bios = bio_result.scalars().all()
         bio_df = pd.DataFrame(
             [
@@ -55,7 +60,9 @@ class AnalyticsService:
             ]
         )
 
-        ctx_result = await self.session.execute(select(ContextualData))
+        ctx_result = await self.session.execute(
+            select(ContextualData).where(ContextualData.user_id == self.user_id)
+        )
         ctxs = ctx_result.scalars().all()
         ctx_df = pd.DataFrame(
             [
@@ -92,7 +99,12 @@ class AnalyticsService:
         date_range_start = df["date"].min()
         date_range_end = df["date"].max()
 
-        await self.session.execute(delete(CorrelationCache).where(CorrelationCache.lag_days == 0))
+        await self.session.execute(
+            delete(CorrelationCache).where(
+                CorrelationCache.user_id == self.user_id,
+                CorrelationCache.lag_days == 0,
+            )
+        )
 
         results: list[CorrelationCache] = []
         available = [m for m in ALL_METRICS if m in df.columns]
@@ -109,6 +121,7 @@ class AnalyticsService:
                     coeff, pval = stats.spearmanr(pair[metric_a], pair[metric_b])
 
                 cache = CorrelationCache(
+                    user_id=self.user_id,
                     computed_at=now,
                     metric_a=metric_a,
                     metric_b=metric_b,
@@ -155,6 +168,7 @@ class AnalyticsService:
                 continue
 
             cache = CorrelationCache(
+                user_id=self.user_id,
                 computed_at=now,
                 metric_a=metric_a,
                 metric_b=metric_b,

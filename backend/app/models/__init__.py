@@ -6,6 +6,7 @@ from app.models.medication import Medication
 from app.models.settings import AppSetting
 from app.models.symptom import SymptomLog
 from app.models.sync_log import SyncLog
+from app.models.user import User
 
 __all__ = [
     "Base",
@@ -17,4 +18,5 @@ __all__ = [
     "AppSetting",
     "SymptomLog",
     "SyncLog",
+    "User",
 ]

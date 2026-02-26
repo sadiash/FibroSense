@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth import get_current_user
 from app.database import get_session
 from app.models.biometric import BiometricReading
 from app.models.contextual import ContextualData
@@ -13,6 +14,7 @@ from app.models.correlation import CorrelationCache
 from app.models.medication import Medication
 from app.models.symptom import SymptomLog
 from app.models.sync_log import SyncLog
+from app.models.user import User
 from app.schemas.demo_data import DemoDataClearResponse, DemoDataStatusResponse
 
 router = APIRouter(prefix="/api/demo-data", tags=["demo-data"])
@@ -29,30 +31,36 @@ SEEDED_MEDICATION_NAMES = [
 @router.get("/status", response_model=DemoDataStatusResponse)
 async def get_demo_data_status(
     session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> DemoDataStatusResponse:
     biometrics = await session.scalar(
         select(func.count()).select_from(BiometricReading).where(
-            BiometricReading.source == "fictitious_oura"
+            BiometricReading.user_id == current_user.id,
+            BiometricReading.source == "fictitious_oura",
         )
     )
     symptoms = await session.scalar(
         select(func.count()).select_from(SymptomLog).where(
-            SymptomLog.notes.like("[FICTITIOUS]%")
+            SymptomLog.user_id == current_user.id,
+            SymptomLog.notes.like("[FICTITIOUS]%"),
         )
     )
     contextual = await session.scalar(
         select(func.count()).select_from(ContextualData).where(
-            ContextualData.date.between(SEED_DATE_START, SEED_DATE_END)
+            ContextualData.user_id == current_user.id,
+            ContextualData.date.between(SEED_DATE_START, SEED_DATE_END),
         )
     )
     medications = await session.scalar(
         select(func.count()).select_from(Medication).where(
-            Medication.name.in_(SEEDED_MEDICATION_NAMES)
+            Medication.user_id == current_user.id,
+            Medication.name.in_(SEEDED_MEDICATION_NAMES),
         )
     )
     sync_logs = await session.scalar(
         select(func.count()).select_from(SyncLog).where(
-            SyncLog.source == "fictitious_seed"
+            SyncLog.user_id == current_user.id,
+            SyncLog.source == "fictitious_seed",
         )
     )
 
@@ -69,17 +77,23 @@ async def get_demo_data_status(
 @router.post("/seed")
 async def seed_demo_data(
     session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> dict:
-    """Seed demo data if the database is empty."""
+    """Seed demo data if the user has no data."""
     count = await session.scalar(
-        select(func.count()).select_from(SymptomLog)
+        select(func.count()).select_from(SymptomLog).where(
+            SymptomLog.user_id == current_user.id,
+        )
     )
     if count and count > 0:
-        return {"status": "skipped", "message": "Database already has data"}
+        return {"status": "skipped", "message": "User already has data"}
 
     seed_script = os.path.join(os.path.dirname(__file__), "..", "..", "scripts", "seed_fictitious_data.py")
     try:
-        subprocess.run([sys.executable, seed_script], check=True)
+        subprocess.run(
+            [sys.executable, seed_script, "--user-id", str(current_user.id)],
+            check=True,
+        )
         return {"status": "seeded"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -88,6 +102,7 @@ async def seed_demo_data(
 @router.delete("", response_model=DemoDataClearResponse)
 async def clear_demo_data(
     session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> DemoDataClearResponse:
     try:
         total = 0
@@ -95,7 +110,8 @@ async def clear_demo_data(
         # Delete biometric readings with fictitious source
         result = await session.execute(
             delete(BiometricReading).where(
-                BiometricReading.source == "fictitious_oura"
+                BiometricReading.user_id == current_user.id,
+                BiometricReading.source == "fictitious_oura",
             )
         )
         total += result.rowcount
@@ -103,7 +119,8 @@ async def clear_demo_data(
         # Delete symptom logs with [FICTITIOUS] prefix
         result = await session.execute(
             delete(SymptomLog).where(
-                SymptomLog.notes.like("[FICTITIOUS]%")
+                SymptomLog.user_id == current_user.id,
+                SymptomLog.notes.like("[FICTITIOUS]%"),
             )
         )
         total += result.rowcount
@@ -111,6 +128,7 @@ async def clear_demo_data(
         # Delete symptom logs with null notes in seed date range
         result = await session.execute(
             delete(SymptomLog).where(
+                SymptomLog.user_id == current_user.id,
                 SymptomLog.notes.is_(None),
                 SymptomLog.date.between(SEED_DATE_START, SEED_DATE_END),
             )
@@ -120,7 +138,8 @@ async def clear_demo_data(
         # Delete contextual data in seed date range
         result = await session.execute(
             delete(ContextualData).where(
-                ContextualData.date.between(SEED_DATE_START, SEED_DATE_END)
+                ContextualData.user_id == current_user.id,
+                ContextualData.date.between(SEED_DATE_START, SEED_DATE_END),
             )
         )
         total += result.rowcount
@@ -128,19 +147,27 @@ async def clear_demo_data(
         # Delete seeded medications
         result = await session.execute(
             delete(Medication).where(
-                Medication.name.in_(SEEDED_MEDICATION_NAMES)
+                Medication.user_id == current_user.id,
+                Medication.name.in_(SEEDED_MEDICATION_NAMES),
             )
         )
         total += result.rowcount
 
         # Delete fictitious sync logs
         result = await session.execute(
-            delete(SyncLog).where(SyncLog.source == "fictitious_seed")
+            delete(SyncLog).where(
+                SyncLog.user_id == current_user.id,
+                SyncLog.source == "fictitious_seed",
+            )
         )
         total += result.rowcount
 
-        # Clear all correlation cache (derived data, will be recomputed)
-        result = await session.execute(delete(CorrelationCache))
+        # Clear user's correlation cache
+        result = await session.execute(
+            delete(CorrelationCache).where(
+                CorrelationCache.user_id == current_user.id,
+            )
+        )
         total += result.rowcount
 
         await session.commit()

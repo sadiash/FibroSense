@@ -1,4 +1,4 @@
-from sqlalchemy import Index, Integer, Text
+from sqlalchemy import ForeignKey, Index, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base
@@ -8,6 +8,7 @@ class SyncLog(Base):
     __tablename__ = "sync_log"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     source: Mapped[str] = mapped_column(Text, nullable=False)
     sync_type: Mapped[str] = mapped_column(Text, nullable=False)
     started_at: Mapped[str] = mapped_column(Text, nullable=False)

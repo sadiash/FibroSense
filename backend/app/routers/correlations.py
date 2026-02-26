@@ -2,8 +2,10 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth import get_current_user
 from app.database import get_session
 from app.models.correlation import CorrelationCache
+from app.models.user import User
 from app.schemas.correlation import CorrelationComputeRequest, CorrelationResponse
 from app.services.analytics_service import AnalyticsService
 
@@ -13,8 +15,13 @@ router = APIRouter(prefix="/api/correlations", tags=["correlations"])
 @router.get("", response_model=list[CorrelationResponse])
 async def get_correlations(
     session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> list[CorrelationCache]:
-    stmt = select(CorrelationCache).order_by(CorrelationCache.computed_at.desc())
+    stmt = (
+        select(CorrelationCache)
+        .where(CorrelationCache.user_id == current_user.id)
+        .order_by(CorrelationCache.computed_at.desc())
+    )
     result = await session.execute(stmt)
     return list(result.scalars().all())
 
@@ -22,10 +29,14 @@ async def get_correlations(
 @router.get("/matrix", response_model=list[CorrelationResponse])
 async def get_correlation_matrix(
     session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> list[CorrelationCache]:
     stmt = (
         select(CorrelationCache)
-        .where(CorrelationCache.lag_days == 0)
+        .where(
+            CorrelationCache.user_id == current_user.id,
+            CorrelationCache.lag_days == 0,
+        )
         .order_by(CorrelationCache.computed_at.desc())
     )
     result = await session.execute(stmt)
@@ -34,7 +45,7 @@ async def get_correlation_matrix(
         return cached
 
     # Auto-compute on first access when cache is empty
-    service = AnalyticsService(session)
+    service = AnalyticsService(session, current_user.id)
     return await service.compute_correlations()
 
 
@@ -42,8 +53,9 @@ async def get_correlation_matrix(
 async def compute_correlations(
     request: CorrelationComputeRequest,
     session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> list[CorrelationCache]:
-    service = AnalyticsService(session)
+    service = AnalyticsService(session, current_user.id)
     return await service.compute_correlations(method=request.method, max_lag=request.max_lag)
 
 
@@ -53,11 +65,13 @@ async def get_lagged_correlations(
     metric_b: str = Query(...),
     max_lag: int = Query(7, ge=0, le=30),
     session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> list[CorrelationCache]:
     # Check cache first
     stmt = (
         select(CorrelationCache)
         .where(
+            CorrelationCache.user_id == current_user.id,
             CorrelationCache.metric_a == metric_a,
             CorrelationCache.metric_b == metric_b,
             CorrelationCache.lag_days <= max_lag,
@@ -69,5 +83,5 @@ async def get_lagged_correlations(
     if cached:
         return cached
 
-    service = AnalyticsService(session)
+    service = AnalyticsService(session, current_user.id)
     return await service.compute_lagged_correlations(metric_a, metric_b, max_lag)

@@ -8,7 +8,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from app.config import settings
 from app.database import engine
 from app.models.base import Base
-from app.routers import biometrics, contextual, correlations, demo_data, export, medications, settings_router, symptoms, sync
+from app.routers import auth, biometrics, contextual, correlations, demo_data, export, medications, settings_router, symptoms, sync
 from app.services.scheduler import start_scheduler
 
 
@@ -31,6 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(symptoms.router)
 app.include_router(medications.router)
 app.include_router(biometrics.router)
@@ -42,6 +43,6 @@ app.include_router(settings_router.router)
 app.include_router(demo_data.router)
 
 
-@app.get("/health")
+@app.get("/api/health")
 async def health_check() -> dict[str, str]:
     return {"status": "healthy"}

@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, Float, Integer, Text
+from sqlalchemy import CheckConstraint, Float, ForeignKey, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, TimestampMixin
@@ -7,6 +7,7 @@ from app.models.base import Base, TimestampMixin
 class ContextualData(TimestampMixin, Base):
     __tablename__ = "contextual_data"
 
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), primary_key=True)
     date: Mapped[str] = mapped_column(Text, primary_key=True)
     barometric_pressure: Mapped[float | None] = mapped_column(Float, nullable=True)
     temperature: Mapped[float | None] = mapped_column(Float, nullable=True)

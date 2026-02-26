@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     weather_latitude: float = 40.7128
     weather_longitude: float = -74.0060
     cors_origins: str = "http://localhost:3000"
+    secret_key: str = "dev-only-change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 7
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

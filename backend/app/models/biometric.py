@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, Float, Index, Integer, Text
+from sqlalchemy import CheckConstraint, Float, ForeignKey, Index, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, TimestampMixin
@@ -7,6 +7,7 @@ from app.models.base import Base, TimestampMixin
 class BiometricReading(TimestampMixin, Base):
     __tablename__ = "biometric_readings"
 
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), primary_key=True)
     date: Mapped[str] = mapped_column(Text, primary_key=True)
     sleep_duration: Mapped[float] = mapped_column(Float, nullable=False)
     sleep_efficiency: Mapped[float] = mapped_column(Float, nullable=False)

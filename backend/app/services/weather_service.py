@@ -16,20 +16,17 @@ class WeatherService:
     FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
     ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: AsyncSession, user_id: int) -> None:
         self.session = session
+        self.user_id = user_id
 
     async def _get_location(self) -> tuple[float, float] | None:
         """Read location from DB first, fall back to env vars."""
-        result = await self.session.execute(
-            select(AppSetting).where(
-                AppSetting.key.in_(["weather_latitude", "weather_longitude"])
-            )
-        )
-        db_settings = {s.key: s.value for s in result.scalars().all()}
+        lat_setting = await self.session.get(AppSetting, (self.user_id, "weather_latitude"))
+        lon_setting = await self.session.get(AppSetting, (self.user_id, "weather_longitude"))
 
-        lat = db_settings.get("weather_latitude") or settings.weather_latitude
-        lon = db_settings.get("weather_longitude") or settings.weather_longitude
+        lat = (lat_setting.value if lat_setting else None) or settings.weather_latitude
+        lon = (lon_setting.value if lon_setting else None) or settings.weather_longitude
 
         if not lat or not lon:
             return None
@@ -44,6 +41,7 @@ class WeatherService:
 
         now = datetime.now(timezone.utc)
         sync_log = SyncLog(
+            user_id=self.user_id,
             source="weather",
             sync_type="daily",
             started_at=now.isoformat(),
@@ -67,12 +65,12 @@ class WeatherService:
             return SyncTriggerResponse(status="error", error_message=str(e))
 
     async def _get_biometric_date_range(self) -> tuple[str, str] | None:
-        """Find the earliest and latest biometric reading dates."""
+        """Find the earliest and latest biometric reading dates for this user."""
         result = await self.session.execute(
             select(
                 func.min(BiometricReading.date),
                 func.max(BiometricReading.date),
-            )
+            ).where(BiometricReading.user_id == self.user_id)
         )
         row = result.one_or_none()
         if row and row[0] and row[1]:
@@ -121,7 +119,7 @@ class WeatherService:
 
         records_synced = 0
         for day, values in all_daily.items():
-            existing = await self.session.get(ContextualData, day)
+            existing = await self.session.get(ContextualData, (self.user_id, day))
             if existing:
                 existing.barometric_pressure = values.get("pressure")
                 existing.temperature = values.get("temperature")
@@ -129,6 +127,7 @@ class WeatherService:
                 existing.updated_at = datetime.now(timezone.utc).isoformat()
             else:
                 record = ContextualData(
+                    user_id=self.user_id,
                     date=day,
                     barometric_pressure=values.get("pressure"),
                     temperature=values.get("temperature"),

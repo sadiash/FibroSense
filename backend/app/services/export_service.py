@@ -10,15 +10,28 @@ from app.models.symptom import SymptomLog
 
 
 class ExportService:
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: AsyncSession, user_id: int) -> None:
         self.session = session
+        self.user_id = user_id
 
     async def export(
         self, format: str, start_date: str | None, end_date: str | None
     ) -> tuple[bytes, str, str]:
-        symptom_stmt = select(SymptomLog).order_by(SymptomLog.date)
-        bio_stmt = select(BiometricReading).order_by(BiometricReading.date)
-        ctx_stmt = select(ContextualData).order_by(ContextualData.date)
+        symptom_stmt = (
+            select(SymptomLog)
+            .where(SymptomLog.user_id == self.user_id)
+            .order_by(SymptomLog.date)
+        )
+        bio_stmt = (
+            select(BiometricReading)
+            .where(BiometricReading.user_id == self.user_id)
+            .order_by(BiometricReading.date)
+        )
+        ctx_stmt = (
+            select(ContextualData)
+            .where(ContextualData.user_id == self.user_id)
+            .order_by(ContextualData.date)
+        )
 
         if start_date:
             symptom_stmt = symptom_stmt.where(SymptomLog.date >= start_date)

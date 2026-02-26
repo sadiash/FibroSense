@@ -14,17 +14,15 @@ from app.schemas.sync import SyncTriggerResponse
 class OuraService:
     BASE_URL = "https://api.ouraring.com/v2/usercollection"
 
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: AsyncSession, user_id: int) -> None:
         self.session = session
+        self.user_id = user_id
 
     async def _get_api_key(self) -> str | None:
         """Read API key from DB first, fall back to env var."""
-        result = await self.session.execute(
-            select(AppSetting).where(AppSetting.key == "oura_api_key")
-        )
-        db_setting = result.scalar_one_or_none()
-        if db_setting and db_setting.value:
-            return db_setting.value
+        setting = await self.session.get(AppSetting, (self.user_id, "oura_api_key"))
+        if setting and setting.value:
+            return setting.value
         return settings.oura_api_key or None
 
     async def sync(self) -> SyncTriggerResponse:
@@ -36,6 +34,7 @@ class OuraService:
 
         now = datetime.now(timezone.utc)
         sync_log = SyncLog(
+            user_id=self.user_id,
             source="oura",
             sync_type="daily",
             started_at=now.isoformat(),
@@ -115,6 +114,7 @@ class OuraService:
             rem_sleep_sec = sleep.get("rem_sleep_duration", 0) or 0
 
             reading = BiometricReading(
+                user_id=self.user_id,
                 date=day,
                 sleep_duration=round(total_sleep_sec / 3600, 2),
                 sleep_efficiency=sleep.get("efficiency", 0) or 0,
@@ -129,7 +129,7 @@ class OuraService:
                 source="oura",
             )
 
-            existing_record = await self.session.get(BiometricReading, day)
+            existing_record = await self.session.get(BiometricReading, (self.user_id, day))
             if existing_record:
                 for col in [
                     "sleep_duration", "sleep_efficiency", "deep_sleep_pct",

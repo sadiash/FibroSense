@@ -1,4 +1,4 @@
-from sqlalchemy import Float, Index, Integer, Text
+from sqlalchemy import Float, ForeignKey, Index, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base
@@ -8,6 +8,7 @@ class CorrelationCache(Base):
     __tablename__ = "correlation_cache"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     computed_at: Mapped[str] = mapped_column(Text, nullable=False)
     metric_a: Mapped[str] = mapped_column(Text, nullable=False)
     metric_b: Mapped[str] = mapped_column(Text, nullable=False)

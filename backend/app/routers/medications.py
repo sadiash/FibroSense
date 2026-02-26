@@ -4,8 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth import get_current_user
 from app.database import get_session
 from app.models.medication import Medication
+from app.models.user import User
 from app.schemas.medication import MedicationCreate, MedicationResponse, MedicationUpdate
 
 router = APIRouter(prefix="/api/medications", tags=["medications"])
@@ -15,8 +17,13 @@ router = APIRouter(prefix="/api/medications", tags=["medications"])
 async def list_medications(
     active_only: bool = Query(True),
     session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> list[Medication]:
-    stmt = select(Medication).order_by(Medication.name)
+    stmt = (
+        select(Medication)
+        .where(Medication.user_id == current_user.id)
+        .order_by(Medication.name)
+    )
     if active_only:
         stmt = stmt.where(Medication.is_active == True)  # noqa: E712
     result = await session.execute(stmt)
@@ -25,9 +32,11 @@ async def list_medications(
 
 @router.post("", response_model=MedicationResponse, status_code=201)
 async def create_medication(
-    data: MedicationCreate, session: AsyncSession = Depends(get_session)
+    data: MedicationCreate,
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> Medication:
-    med = Medication(**data.model_dump())
+    med = Medication(user_id=current_user.id, **data.model_dump())
     session.add(med)
     await session.commit()
     await session.refresh(med)
@@ -36,10 +45,13 @@ async def create_medication(
 
 @router.put("/{med_id}", response_model=MedicationResponse)
 async def update_medication(
-    med_id: int, data: MedicationUpdate, session: AsyncSession = Depends(get_session)
+    med_id: int,
+    data: MedicationUpdate,
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> Medication:
     med = await session.get(Medication, med_id)
-    if not med:
+    if not med or med.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Medication not found")
 
     update_data = data.model_dump(exclude_unset=True)
@@ -54,10 +66,12 @@ async def update_medication(
 
 @router.delete("/{med_id}", status_code=204)
 async def delete_medication(
-    med_id: int, session: AsyncSession = Depends(get_session)
+    med_id: int,
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> None:
     med = await session.get(Medication, med_id)
-    if not med:
+    if not med or med.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Medication not found")
     med.is_active = False
     med.updated_at = datetime.now(timezone.utc).isoformat()
