@@ -31,12 +31,20 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
                 result = await conn.execute(text("SELECT COUNT(*) FROM symptom_logs"))
                 count = result.scalar()
             if count == 0:
+                import threading
                 seed_script = os.path.join(os.path.dirname(__file__), "..", "scripts", "seed_fictitious_data.py")
-                logger.info("DB is empty, seeding demo data from %s", seed_script)
-                subprocess.run([sys.executable, seed_script], check=True)
-                logger.info("Demo data seeded successfully")
+                logger.info("DB is empty, seeding demo data in background")
+
+                def _seed():
+                    try:
+                        subprocess.run([sys.executable, seed_script], check=True)
+                        logger.info("Demo data seeded successfully")
+                    except Exception:
+                        logger.exception("Failed to seed demo data")
+
+                threading.Thread(target=_seed, daemon=True).start()
         except Exception:
-            logger.exception("Failed to auto-seed demo data (app will still start)")
+            logger.exception("Failed to check/start demo seed (app will still start)")
 
     start_scheduler()
     yield
