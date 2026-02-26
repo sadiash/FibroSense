@@ -86,6 +86,12 @@ FibroSense runs on **Render** (backend) + **Vercel** (frontend) for $0/month on 
 
 ---
 
+## Architecture
+
+<p align="center">
+  <img src="docs/architecture.svg" alt="FibroSense System Architecture" width="100%">
+</p>
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -125,6 +131,8 @@ FibroSense/
 │       │   └── (auth)/        # Public pages (login, register)
 │       ├── components/        # UI components
 │       └── lib/               # API client, auth context, hooks, types
+├── docs/
+│   └── architecture.svg       # System architecture diagram
 ├── DEPLOYMENT.md              # Production deployment guide
 ├── V2_ROADMAP.md              # Planned improvements
 ├── CONTRIBUTING.md            # Contribution guidelines

@@ -1,0 +1,581 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1680" font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="deepPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="vercelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="renderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#46E3B7"/>
+      <stop offset="100%" stop-color="#2DC9A1"/>
+    </linearGradient>
+    <linearGradient id="sqliteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#003B57"/>
+      <stop offset="100%" stop-color="#044F73"/>
+    </linearGradient>
+    <linearGradient id="ouraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#C5A028"/>
+    </linearGradient>
+    <linearGradient id="weatherGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F0A1A"/>
+      <stop offset="50%" stop-color="#130D20"/>
+      <stop offset="100%" stop-color="#0F0A1A"/>
+    </linearGradient>
+    <linearGradient id="flowDown" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#A855F7" stop-opacity="0.3"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <filter id="cardShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+
+    <!-- Arrow marker -->
+    <marker id="arrowPurple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#8B5CF6"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#46E3B7"/>
+    </marker>
+    <marker id="arrowGold" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#D4AF37"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6"/>
+    </marker>
+    <marker id="arrowWhite" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#E2D9F3"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="1680" fill="url(#bgGrad)"/>
+  <!-- Subtle grid -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#8B5CF6" stroke-opacity="0.04" stroke-width="0.5"/>
+  </pattern>
+  <rect width="1400" height="1680" fill="url(#grid)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- HEADER                                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <rect x="40" y="25" width="1320" height="70" rx="16" fill="url(#headerGrad)" filter="url(#softShadow)"/>
+  <!-- Butterfly icon approximation -->
+  <g transform="translate(80, 60)">
+    <path d="M-8,-10 Q-18,-18 -14,-6 Q-10,2 0,0" fill="#E9D5FF" opacity="0.9"/>
+    <path d="M8,-10 Q18,-18 14,-6 Q10,2 0,0" fill="#E9D5FF" opacity="0.9"/>
+    <path d="M-6,2 Q-14,14 -8,10 Q-2,6 0,0" fill="#DDD6FE" opacity="0.8"/>
+    <path d="M6,2 Q14,14 8,10 Q2,6 0,0" fill="#DDD6FE" opacity="0.8"/>
+    <circle cx="0" cy="0" r="1.5" fill="#fff"/>
+  </g>
+  <text x="105" y="66" font-size="24" font-weight="800" fill="#fff" letter-spacing="-0.5">FibroSense</text>
+  <text x="280" y="66" font-size="14" fill="#E9D5FF" font-weight="400">System Architecture</text>
+  <text x="1310" y="66" font-size="11" fill="#C4B5FD" font-weight="400" text-anchor="end">v1.0 — Feb 2026</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- LAYER 1: CLIENT / USER                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <text x="70" y="135" font-size="11" font-weight="700" fill="#A78BFA" letter-spacing="2" text-transform="uppercase">CLIENTS</text>
+  <line x1="145" y1="131" x2="1330" y2="131" stroke="#A78BFA" stroke-opacity="0.15" stroke-width="1"/>
+
+  <!-- Browser -->
+  <rect x="200" y="150" width="200" height="80" rx="12" fill="#1E1533" stroke="#8B5CF6" stroke-opacity="0.3" stroke-width="1" filter="url(#softShadow)"/>
+  <rect x="220" y="165" width="16" height="12" rx="2" fill="none" stroke="#C4B5FD" stroke-width="1.5"/>
+  <line x1="220" y1="169" x2="236" y2="169" stroke="#C4B5FD" stroke-width="1"/>
+  <text x="244" y="176" font-size="13" font-weight="700" fill="#E2D9F3">Web Browser</text>
+  <text x="220" y="198" font-size="10" fill="#9B8CB5">Desktop &amp; Mobile</text>
+  <text x="220" y="213" font-size="10" fill="#7C6F94">Chrome / Safari / Firefox</text>
+
+  <!-- PWA -->
+  <rect x="460" y="150" width="200" height="80" rx="12" fill="#1E1533" stroke="#8B5CF6" stroke-opacity="0.3" stroke-width="1" filter="url(#softShadow)"/>
+  <rect x="480" y="165" width="12" height="16" rx="2" fill="none" stroke="#C4B5FD" stroke-width="1.5"/>
+  <circle cx="486" cy="177" r="1.5" fill="#C4B5FD"/>
+  <text x="500" y="178" font-size="13" font-weight="700" fill="#E2D9F3">PWA</text>
+  <text x="480" y="198" font-size="10" fill="#9B8CB5">Progressive Web App</text>
+  <text x="480" y="213" font-size="10" fill="#7C6F94">Service Worker + manifest.json</text>
+
+  <!-- Guest / Auth -->
+  <rect x="720" y="150" width="260" height="80" rx="12" fill="#1E1533" stroke="#A855F7" stroke-opacity="0.3" stroke-width="1" filter="url(#softShadow)"/>
+  <circle cx="745" cy="178" r="12" fill="none" stroke="#C4B5FD" stroke-width="1.5"/>
+  <circle cx="745" cy="173" r="4" fill="none" stroke="#C4B5FD" stroke-width="1.5"/>
+  <text x="764" y="176" font-size="13" font-weight="700" fill="#E2D9F3">Authentication</text>
+  <text x="740" y="198" font-size="10" fill="#9B8CB5">JWT Access (30m) + Refresh Cookie (7d)</text>
+  <text x="740" y="213" font-size="10" fill="#7C6F94">Guest login: guest@fibrosense.app</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- ARROW: Client → Frontend                                           -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <line x1="500" y1="230" x2="500" y2="270" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrowPurple)" opacity="0.6"/>
+  <text x="510" y="255" font-size="9" fill="#8B5CF6" opacity="0.7">HTTPS</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- LAYER 2: FRONTEND (VERCEL)                                         -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <text x="70" y="295" font-size="11" font-weight="700" fill="#A78BFA" letter-spacing="2">FRONTEND</text>
+  <line x1="170" y1="291" x2="1330" y2="291" stroke="#A78BFA" stroke-opacity="0.15" stroke-width="1"/>
+
+  <!-- Vercel container -->
+  <rect x="60" y="310" width="1280" height="340" rx="16" fill="#1A1128" stroke="#8B5CF6" stroke-opacity="0.2" stroke-width="1" filter="url(#cardShadow)"/>
+  <!-- Vercel badge -->
+  <rect x="80" y="320" width="120" height="24" rx="6" fill="url(#vercelGrad)"/>
+  <text x="105" y="336" font-size="10" font-weight="700" fill="#fff">VERCEL</text>
+  <text x="220" y="336" font-size="10" fill="#7C6F94">Next.js 14 (App Router) + React 18</text>
+
+  <!-- Pages row -->
+  <text x="90" y="370" font-size="10" font-weight="600" fill="#A78BFA">PAGES</text>
+
+  <!-- Dashboard -->
+  <rect x="80" y="380" width="220" height="110" rx="10" fill="#231740" stroke="#7C3AED" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="100" y="400" font-size="12" font-weight="700" fill="#E2D9F3">Dashboard</text>
+  <text x="100" y="400" font-size="8" fill="#7C6F94" dy="14">/(app)/page.tsx</text>
+  <text x="100" y="430" font-size="9" fill="#9B8CB5">Summary Cards (pain, fatigue, sleep, HRV)</text>
+  <text x="100" y="443" font-size="9" fill="#9B8CB5">Unified Timeline</text>
+  <text x="100" y="456" font-size="9" fill="#9B8CB5">Body Map Heatmap</text>
+  <text x="100" y="469" font-size="9" fill="#9B8CB5">Biometric Charts + Flare Timeline</text>
+  <text x="100" y="482" font-size="9" fill="#9B8CB5">Weather Impact</text>
+
+  <!-- Symptom Logger -->
+  <rect x="320" y="380" width="220" height="110" rx="10" fill="#231740" stroke="#7C3AED" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="340" y="400" font-size="12" font-weight="700" fill="#E2D9F3">Symptom Logger</text>
+  <text x="340" y="414" font-size="8" fill="#7C6F94">/(app)/log/page.tsx</text>
+  <text x="340" y="430" font-size="9" fill="#9B8CB5">Body Map (front + back SVG)</text>
+  <text x="340" y="443" font-size="9" fill="#9B8CB5">Pain Locations + Descriptors</text>
+  <text x="340" y="456" font-size="9" fill="#9B8CB5">Flare Toggle, Mood, Brain Fog</text>
+  <text x="340" y="469" font-size="9" fill="#9B8CB5">Missed Medications Checklist</text>
+  <text x="340" y="482" font-size="9" fill="#9B8CB5">Contextual Factors (stress, exercise)</text>
+
+  <!-- Insights / Correlations -->
+  <rect x="560" y="380" width="220" height="110" rx="10" fill="#231740" stroke="#7C3AED" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="580" y="400" font-size="12" font-weight="700" fill="#E2D9F3">Insights</text>
+  <text x="580" y="414" font-size="8" fill="#7C6F94">/(app)/correlations/page.tsx</text>
+  <text x="580" y="430" font-size="9" fill="#9B8CB5">Correlation Heatmap (matrix)</text>
+  <text x="580" y="443" font-size="9" fill="#9B8CB5">Lagged Correlations (0-7d)</text>
+  <text x="580" y="456" font-size="9" fill="#9B8CB5">Scatter Plot (drill-down)</text>
+  <text x="580" y="469" font-size="9" fill="#9B8CB5">Trigger Breakdown + Flare Signals</text>
+  <text x="580" y="482" font-size="9" fill="#9B8CB5">Weekly Rhythm + Best/Worst Days</text>
+
+  <!-- Settings -->
+  <rect x="800" y="380" width="220" height="110" rx="10" fill="#231740" stroke="#7C3AED" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="820" y="400" font-size="12" font-weight="700" fill="#E2D9F3">Settings</text>
+  <text x="820" y="414" font-size="8" fill="#7C6F94">/(app)/settings/page.tsx</text>
+  <text x="820" y="430" font-size="9" fill="#9B8CB5">Medication Manager (CRUD)</text>
+  <text x="820" y="443" font-size="9" fill="#9B8CB5">Weather Location (Leaflet map)</text>
+  <text x="820" y="456" font-size="9" fill="#9B8CB5">Oura Ring Connection</text>
+  <text x="820" y="469" font-size="9" fill="#9B8CB5">Data Export (CSV / JSON)</text>
+  <text x="820" y="482" font-size="9" fill="#9B8CB5">Demo Data Manager</text>
+
+  <!-- Auth Pages -->
+  <rect x="1040" y="380" width="220" height="110" rx="10" fill="#231740" stroke="#7C3AED" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="1060" y="400" font-size="12" font-weight="700" fill="#E2D9F3">Auth Pages</text>
+  <text x="1060" y="414" font-size="8" fill="#7C6F94">/(auth)/login + register</text>
+  <text x="1060" y="430" font-size="9" fill="#9B8CB5">Login (email/password)</text>
+  <text x="1060" y="443" font-size="9" fill="#9B8CB5">Try as Guest (demo access)</text>
+  <text x="1060" y="456" font-size="9" fill="#9B8CB5">Register (name, email, pass)</text>
+  <text x="1060" y="469" font-size="9" fill="#9B8CB5">Animated Background</text>
+  <text x="1060" y="482" font-size="9" fill="#9B8CB5">Glassmorphic Card UI</text>
+
+  <!-- Libraries row -->
+  <text x="90" y="520" font-size="10" font-weight="600" fill="#A78BFA">STATE &amp; UI LIBRARIES</text>
+
+  <!-- Library pills -->
+  <g transform="translate(80, 530)">
+    <rect x="0" y="0" width="115" height="26" rx="6" fill="#2D1F4E"/>
+    <text x="10" y="17" font-size="9" font-weight="600" fill="#C4B5FD">TanStack Query v5</text>
+
+    <rect x="125" y="0" width="95" height="26" rx="6" fill="#2D1F4E"/>
+    <text x="135" y="17" font-size="9" font-weight="600" fill="#C4B5FD">Framer Motion</text>
+
+    <rect x="230" y="0" width="78" height="26" rx="6" fill="#2D1F4E"/>
+    <text x="240" y="17" font-size="9" font-weight="600" fill="#C4B5FD">Recharts 3</text>
+
+    <rect x="318" y="0" width="58" height="26" rx="6" fill="#2D1F4E"/>
+    <text x="328" y="17" font-size="9" font-weight="600" fill="#C4B5FD">D3.js 7</text>
+
+    <rect x="386" y="0" width="72" height="26" rx="6" fill="#2D1F4E"/>
+    <text x="396" y="17" font-size="9" font-weight="600" fill="#C4B5FD">Radix UI</text>
+
+    <rect x="468" y="0" width="105" height="26" rx="6" fill="#2D1F4E"/>
+    <text x="478" y="17" font-size="9" font-weight="600" fill="#C4B5FD">Phosphor Icons</text>
+
+    <rect x="583" y="0" width="85" height="26" rx="6" fill="#2D1F4E"/>
+    <text x="593" y="17" font-size="9" font-weight="600" fill="#C4B5FD">Tailwind CSS</text>
+
+    <rect x="678" y="0" width="100" height="26" rx="6" fill="#2D1F4E"/>
+    <text x="688" y="17" font-size="9" font-weight="600" fill="#C4B5FD">React Leaflet</text>
+
+    <rect x="788" y="0" width="70" height="26" rx="6" fill="#2D1F4E"/>
+    <text x="798" y="17" font-size="9" font-weight="600" fill="#C4B5FD">date-fns</text>
+  </g>
+
+  <!-- Key modules -->
+  <text x="90" y="586" font-size="10" font-weight="600" fill="#A78BFA">KEY MODULES</text>
+
+  <g transform="translate(80, 594)">
+    <rect x="0" y="0" width="155" height="40" rx="8" fill="#1E1533" stroke="#6D28D9" stroke-opacity="0.3"/>
+    <text x="12" y="16" font-size="9" font-weight="600" fill="#DDD6FE">AuthProvider</text>
+    <text x="12" y="30" font-size="8" fill="#7C6F94">lib/auth-context.tsx</text>
+
+    <rect x="170" y="0" width="155" height="40" rx="8" fill="#1E1533" stroke="#6D28D9" stroke-opacity="0.3"/>
+    <text x="182" y="16" font-size="9" font-weight="600" fill="#DDD6FE">AuthGuard</text>
+    <text x="182" y="30" font-size="8" fill="#7C6F94">components/layout/auth-guard</text>
+
+    <rect x="340" y="0" width="155" height="40" rx="8" fill="#1E1533" stroke="#6D28D9" stroke-opacity="0.3"/>
+    <text x="352" y="16" font-size="9" font-weight="600" fill="#DDD6FE">API Client + Auto-refresh</text>
+    <text x="352" y="30" font-size="8" fill="#7C6F94">lib/api.ts (401 retry)</text>
+
+    <rect x="510" y="0" width="155" height="40" rx="8" fill="#1E1533" stroke="#6D28D9" stroke-opacity="0.3"/>
+    <text x="522" y="16" font-size="9" font-weight="600" fill="#DDD6FE">QueryClientProvider</text>
+    <text x="522" y="30" font-size="8" fill="#7C6F94">lib/query-client.ts</text>
+
+    <rect x="680" y="0" width="155" height="40" rx="8" fill="#1E1533" stroke="#6D28D9" stroke-opacity="0.3"/>
+    <text x="692" y="16" font-size="9" font-weight="600" fill="#DDD6FE">Custom Hooks (7)</text>
+    <text x="692" y="30" font-size="8" fill="#7C6F94">lib/hooks/use-*.ts</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- ARROW: Frontend → API Proxy                                        -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <line x1="700" y1="650" x2="700" y2="690" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrowPurple)" opacity="0.6"/>
+  <text x="710" y="676" font-size="9" fill="#8B5CF6" opacity="0.7">/api/* rewrite</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- LAYER 3: API PROXY                                                  -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <rect x="250" y="692" width="900" height="36" rx="10" fill="#2D1F4E" stroke="#8B5CF6" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="620" y="715" font-size="11" font-weight="600" fill="#C4B5FD" text-anchor="middle">Next.js API Rewrite Proxy</text>
+  <text x="875" y="715" font-size="9" fill="#7C6F94">next.config.mjs → /api/:path* → NEXT_PUBLIC_API_URL/api/:path*</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- ARROW: Proxy → Backend                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <line x1="700" y1="728" x2="700" y2="770" stroke="#46E3B7" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrowGreen)" opacity="0.6"/>
+  <text x="710" y="756" font-size="9" fill="#46E3B7" opacity="0.7">HTTPS</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- LAYER 4: BACKEND (RENDER)                                          -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <text x="70" y="790" font-size="11" font-weight="700" fill="#A78BFA" letter-spacing="2">BACKEND</text>
+  <line x1="155" y1="786" x2="1330" y2="786" stroke="#A78BFA" stroke-opacity="0.15" stroke-width="1"/>
+
+  <!-- Render container -->
+  <rect x="60" y="800" width="1280" height="440" rx="16" fill="#0F1A14" stroke="#46E3B7" stroke-opacity="0.2" stroke-width="1" filter="url(#cardShadow)"/>
+  <!-- Render badge -->
+  <rect x="80" y="810" width="100" height="24" rx="6" fill="url(#renderGrad)"/>
+  <text x="100" y="826" font-size="10" font-weight="700" fill="#0F1A14">RENDER</text>
+  <text x="200" y="826" font-size="10" fill="#7C6F94">FastAPI (Python 3.12) + Uvicorn</text>
+
+  <!-- Middleware bar -->
+  <text x="90" y="858" font-size="10" font-weight="600" fill="#46E3B7">MIDDLEWARE</text>
+  <g transform="translate(80, 866)">
+    <rect x="0" y="0" width="130" height="26" rx="6" fill="#142920" stroke="#46E3B7" stroke-opacity="0.2"/>
+    <text x="12" y="17" font-size="9" font-weight="600" fill="#86EFAC">CORS (credentials)</text>
+
+    <rect x="142" y="0" width="130" height="26" rx="6" fill="#142920" stroke="#46E3B7" stroke-opacity="0.2"/>
+    <text x="154" y="17" font-size="9" font-weight="600" fill="#86EFAC">GZip (&gt;500 bytes)</text>
+
+    <rect x="284" y="0" width="175" height="26" rx="6" fill="#142920" stroke="#46E3B7" stroke-opacity="0.2"/>
+    <text x="296" y="17" font-size="9" font-weight="600" fill="#86EFAC">JWT Auth (Bearer Token)</text>
+
+    <rect x="471" y="0" width="185" height="26" rx="6" fill="#142920" stroke="#46E3B7" stroke-opacity="0.2"/>
+    <text x="483" y="17" font-size="9" font-weight="600" fill="#86EFAC">OAuth2PasswordBearer</text>
+  </g>
+
+  <!-- Routers -->
+  <text x="90" y="922" font-size="10" font-weight="600" fill="#46E3B7">API ROUTERS</text>
+
+  <!-- Row 1 of routers -->
+  <rect x="80" y="932" width="160" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="96" y="950" font-size="10" font-weight="700" fill="#A7F3D0">/api/auth</text>
+  <text x="96" y="964" font-size="8" fill="#6EE7B7">POST register, login</text>
+  <text x="96" y="976" font-size="8" fill="#6EE7B7">POST refresh, logout</text>
+  <text x="96" y="988" font-size="8" fill="#6EE7B7">GET/PUT me</text>
+
+  <rect x="255" y="932" width="160" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="271" y="950" font-size="10" font-weight="700" fill="#A7F3D0">/api/symptoms</text>
+  <text x="271" y="964" font-size="8" fill="#6EE7B7">GET list (date range)</text>
+  <text x="271" y="976" font-size="8" fill="#6EE7B7">POST create</text>
+  <text x="271" y="988" font-size="8" fill="#6EE7B7">PUT update, DELETE</text>
+
+  <rect x="430" y="932" width="160" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="446" y="950" font-size="10" font-weight="700" fill="#A7F3D0">/api/medications</text>
+  <text x="446" y="964" font-size="8" fill="#6EE7B7">GET list (active filter)</text>
+  <text x="446" y="976" font-size="8" fill="#6EE7B7">POST create</text>
+  <text x="446" y="988" font-size="8" fill="#6EE7B7">PUT update, DELETE (soft)</text>
+
+  <rect x="605" y="932" width="160" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="621" y="950" font-size="10" font-weight="700" fill="#A7F3D0">/api/biometrics</text>
+  <text x="621" y="964" font-size="8" fill="#6EE7B7">GET list (date range)</text>
+  <text x="621" y="976" font-size="8" fill="#6EE7B7">GET by date</text>
+  <text x="621" y="988" font-size="8" fill="#6EE7B7">POST upsert</text>
+
+  <rect x="780" y="932" width="160" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="796" y="950" font-size="10" font-weight="700" fill="#A7F3D0">/api/contextual</text>
+  <text x="796" y="964" font-size="8" fill="#6EE7B7">GET list (date range)</text>
+  <text x="796" y="976" font-size="8" fill="#6EE7B7">POST create</text>
+  <text x="796" y="988" font-size="8" fill="#6EE7B7">PUT update by date</text>
+
+  <!-- Row 2 of routers -->
+  <rect x="80" y="1008" width="185" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="96" y="1026" font-size="10" font-weight="700" fill="#A7F3D0">/api/correlations</text>
+  <text x="96" y="1040" font-size="8" fill="#6EE7B7">GET matrix (lag=0, auto-compute)</text>
+  <text x="96" y="1052" font-size="8" fill="#6EE7B7">GET lagged (?metric_a&amp;metric_b)</text>
+  <text x="96" y="1064" font-size="8" fill="#6EE7B7">POST compute (force refresh)</text>
+
+  <rect x="280" y="1008" width="160" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="296" y="1026" font-size="10" font-weight="700" fill="#A7F3D0">/api/sync</text>
+  <text x="296" y="1040" font-size="8" fill="#6EE7B7">POST /oura (trigger)</text>
+  <text x="296" y="1052" font-size="8" fill="#6EE7B7">POST /weather (trigger)</text>
+  <text x="296" y="1064" font-size="8" fill="#6EE7B7">GET /status (last 20)</text>
+
+  <rect x="455" y="1008" width="160" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="471" y="1026" font-size="10" font-weight="700" fill="#A7F3D0">/api/settings</text>
+  <text x="471" y="1040" font-size="8" fill="#6EE7B7">GET all</text>
+  <text x="471" y="1052" font-size="8" fill="#6EE7B7">GET/PUT by key</text>
+  <text x="471" y="1064" font-size="8" fill="#6EE7B7">(weather lat/lon, oura key)</text>
+
+  <rect x="630" y="1008" width="160" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="646" y="1026" font-size="10" font-weight="700" fill="#A7F3D0">/api/export</text>
+  <text x="646" y="1040" font-size="8" fill="#6EE7B7">GET ?format=csv|json</text>
+  <text x="646" y="1052" font-size="8" fill="#6EE7B7">StreamingResponse</text>
+  <text x="646" y="1064" font-size="8" fill="#6EE7B7">Optional date range filter</text>
+
+  <rect x="805" y="1008" width="160" height="65" rx="8" fill="#142920" stroke="#2DC9A1" stroke-opacity="0.25"/>
+  <text x="821" y="1026" font-size="10" font-weight="700" fill="#A7F3D0">/api/demo-data</text>
+  <text x="821" y="1040" font-size="8" fill="#6EE7B7">POST /seed (if empty)</text>
+  <text x="821" y="1052" font-size="8" fill="#6EE7B7">GET /status</text>
+  <text x="821" y="1064" font-size="8" fill="#6EE7B7">DELETE (clear fictitious)</text>
+
+  <!-- Services -->
+  <text x="90" y="1105" font-size="10" font-weight="600" fill="#46E3B7">SERVICES</text>
+
+  <rect x="80" y="1114" width="200" height="55" rx="8" fill="#0D1F15" stroke="#46E3B7" stroke-opacity="0.15"/>
+  <text x="96" y="1132" font-size="10" font-weight="700" fill="#86EFAC">OuraService</text>
+  <text x="96" y="1146" font-size="8" fill="#6EE7B7">Fetch sleep, readiness, activity</text>
+  <text x="96" y="1158" font-size="8" fill="#6EE7B7">httpx async → upsert BiometricReading</text>
+
+  <rect x="295" y="1114" width="200" height="55" rx="8" fill="#0D1F15" stroke="#46E3B7" stroke-opacity="0.15"/>
+  <text x="311" y="1132" font-size="10" font-weight="700" fill="#86EFAC">WeatherService</text>
+  <text x="311" y="1146" font-size="8" fill="#6EE7B7">Open-Meteo (forecast + archive)</text>
+  <text x="311" y="1158" font-size="8" fill="#6EE7B7">Pressure, temp, humidity → Contextual</text>
+
+  <rect x="510" y="1114" width="200" height="55" rx="8" fill="#0D1F15" stroke="#46E3B7" stroke-opacity="0.15"/>
+  <text x="526" y="1132" font-size="10" font-weight="700" fill="#86EFAC">AnalyticsService</text>
+  <text x="526" y="1146" font-size="8" fill="#6EE7B7">pandas + scipy (Spearman/Pearson)</text>
+  <text x="526" y="1158" font-size="8" fill="#6EE7B7">Lagged correlations → cache</text>
+
+  <rect x="725" y="1114" width="200" height="55" rx="8" fill="#0D1F15" stroke="#46E3B7" stroke-opacity="0.15"/>
+  <text x="741" y="1132" font-size="10" font-weight="700" fill="#86EFAC">Scheduler (APScheduler)</text>
+  <text x="741" y="1146" font-size="8" fill="#6EE7B7">5AM weather, 6AM oura, 7AM stats</text>
+  <text x="741" y="1158" font-size="8" fill="#6EE7B7">Iterates all active users</text>
+
+  <!-- Libraries pills -->
+  <text x="90" y="1195" font-size="10" font-weight="600" fill="#46E3B7">PYTHON LIBRARIES</text>
+  <g transform="translate(80, 1203)">
+    <rect x="0" y="0" width="80" height="22" rx="5" fill="#142920"/>
+    <text x="10" y="15" font-size="8" font-weight="600" fill="#86EFAC">SQLAlchemy</text>
+
+    <rect x="90" y="0" width="68" height="22" rx="5" fill="#142920"/>
+    <text x="100" y="15" font-size="8" font-weight="600" fill="#86EFAC">aiosqlite</text>
+
+    <rect x="168" y="0" width="55" height="22" rx="5" fill="#142920"/>
+    <text x="178" y="15" font-size="8" font-weight="600" fill="#86EFAC">bcrypt</text>
+
+    <rect x="233" y="0" width="80" height="22" rx="5" fill="#142920"/>
+    <text x="243" y="15" font-size="8" font-weight="600" fill="#86EFAC">python-jose</text>
+
+    <rect x="323" y="0" width="55" height="22" rx="5" fill="#142920"/>
+    <text x="333" y="15" font-size="8" font-weight="600" fill="#86EFAC">pandas</text>
+
+    <rect x="388" y="0" width="50" height="22" rx="5" fill="#142920"/>
+    <text x="398" y="15" font-size="8" font-weight="600" fill="#86EFAC">scipy</text>
+
+    <rect x="448" y="0" width="55" height="22" rx="5" fill="#142920"/>
+    <text x="458" y="15" font-size="8" font-weight="600" fill="#86EFAC">numpy</text>
+
+    <rect x="513" y="0" width="48" height="22" rx="5" fill="#142920"/>
+    <text x="523" y="15" font-size="8" font-weight="600" fill="#86EFAC">httpx</text>
+
+    <rect x="571" y="0" width="80" height="22" rx="5" fill="#142920"/>
+    <text x="581" y="15" font-size="8" font-weight="600" fill="#86EFAC">APScheduler</text>
+
+    <rect x="661" y="0" width="65" height="22" rx="5" fill="#142920"/>
+    <text x="671" y="15" font-size="8" font-weight="600" fill="#86EFAC">Pydantic</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- ARROW: Backend → Database                                          -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <line x1="400" y1="1240" x2="400" y2="1290" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrowBlue)" opacity="0.6"/>
+  <text x="410" y="1272" font-size="9" fill="#3B82F6" opacity="0.7">SQLAlchemy async</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- LAYER 5: DATABASE                                                   -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <text x="70" y="1310" font-size="11" font-weight="700" fill="#A78BFA" letter-spacing="2">DATA LAYER</text>
+  <line x1="175" y1="1306" x2="1330" y2="1306" stroke="#A78BFA" stroke-opacity="0.15" stroke-width="1"/>
+
+  <!-- SQLite container -->
+  <rect x="60" y="1320" width="770" height="200" rx="16" fill="#0A1525" stroke="#3B82F6" stroke-opacity="0.2" stroke-width="1" filter="url(#cardShadow)"/>
+  <!-- SQLite badge -->
+  <rect x="80" y="1330" width="90" height="24" rx="6" fill="url(#sqliteGrad)"/>
+  <text x="98" y="1346" font-size="10" font-weight="700" fill="#fff">SQLite</text>
+  <text x="185" y="1346" font-size="10" fill="#7C6F94">WAL mode + pragma optimizations + Persistent Disk (/data/)</text>
+
+  <!-- Tables -->
+  <g transform="translate(80, 1362)">
+    <!-- Users -->
+    <rect x="0" y="0" width="130" height="55" rx="6" fill="#0D1B2A" stroke="#3B82F6" stroke-opacity="0.25"/>
+    <text x="12" y="16" font-size="9" font-weight="700" fill="#93C5FD">users</text>
+    <text x="12" y="30" font-size="7" fill="#60A5FA">id, email, hashed_password</text>
+    <text x="12" y="41" font-size="7" fill="#60A5FA">full_name, is_active</text>
+
+    <!-- Symptom Logs -->
+    <rect x="145" y="0" width="130" height="55" rx="6" fill="#0D1B2A" stroke="#3B82F6" stroke-opacity="0.25"/>
+    <text x="157" y="16" font-size="9" font-weight="700" fill="#93C5FD">symptom_logs</text>
+    <text x="157" y="30" font-size="7" fill="#60A5FA">pain, fatigue, fog, mood</text>
+    <text x="157" y="41" font-size="7" fill="#60A5FA">pain_locations (JSON), flare</text>
+
+    <!-- Biometrics -->
+    <rect x="290" y="0" width="130" height="55" rx="6" fill="#0D1B2A" stroke="#3B82F6" stroke-opacity="0.25"/>
+    <text x="302" y="16" font-size="9" font-weight="700" fill="#93C5FD">biometric_readings</text>
+    <text x="302" y="30" font-size="7" fill="#60A5FA">sleep, HRV, HR, temp, spo2</text>
+    <text x="302" y="41" font-size="7" fill="#60A5FA">PK: (user_id, date)</text>
+
+    <!-- Contextual -->
+    <rect x="435" y="0" width="130" height="55" rx="6" fill="#0D1B2A" stroke="#3B82F6" stroke-opacity="0.25"/>
+    <text x="447" y="16" font-size="9" font-weight="700" fill="#93C5FD">contextual_data</text>
+    <text x="447" y="30" font-size="7" fill="#60A5FA">pressure, temp, humidity</text>
+    <text x="447" y="41" font-size="7" fill="#60A5FA">stress, menstrual, exercise</text>
+
+    <!-- Medications -->
+    <rect x="580" y="0" width="130" height="55" rx="6" fill="#0D1B2A" stroke="#3B82F6" stroke-opacity="0.25"/>
+    <text x="592" y="16" font-size="9" font-weight="700" fill="#93C5FD">medications</text>
+    <text x="592" y="30" font-size="7" fill="#60A5FA">name, dosage, frequency</text>
+    <text x="592" y="41" font-size="7" fill="#60A5FA">is_active (soft delete)</text>
+  </g>
+
+  <g transform="translate(80, 1430)">
+    <!-- Correlations -->
+    <rect x="0" y="0" width="175" height="55" rx="6" fill="#0D1B2A" stroke="#3B82F6" stroke-opacity="0.25"/>
+    <text x="12" y="16" font-size="9" font-weight="700" fill="#93C5FD">correlation_cache</text>
+    <text x="12" y="30" font-size="7" fill="#60A5FA">metric_a/b, lag_days, coefficient</text>
+    <text x="12" y="41" font-size="7" fill="#60A5FA">p_value, sample_size, method</text>
+
+    <!-- App Settings -->
+    <rect x="190" y="0" width="150" height="55" rx="6" fill="#0D1B2A" stroke="#3B82F6" stroke-opacity="0.25"/>
+    <text x="202" y="16" font-size="9" font-weight="700" fill="#93C5FD">app_settings</text>
+    <text x="202" y="30" font-size="7" fill="#60A5FA">PK: (user_id, key)</text>
+    <text x="202" y="41" font-size="7" fill="#60A5FA">weather_lat/lon, oura_key</text>
+
+    <!-- Sync Log -->
+    <rect x="355" y="0" width="150" height="55" rx="6" fill="#0D1B2A" stroke="#3B82F6" stroke-opacity="0.25"/>
+    <text x="367" y="16" font-size="9" font-weight="700" fill="#93C5FD">sync_log</text>
+    <text x="367" y="30" font-size="7" fill="#60A5FA">source, status, records_synced</text>
+    <text x="367" y="41" font-size="7" fill="#60A5FA">started_at, completed_at</text>
+  </g>
+
+  <!-- FK arrows (simplified) -->
+  <text x="87" y="1510" font-size="8" fill="#3B82F6" opacity="0.6">All data tables have user_id FK → users. Multi-user data isolation.</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- LAYER 6: EXTERNAL SERVICES (right side)                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <text x="870" y="1310" font-size="11" font-weight="700" fill="#A78BFA" letter-spacing="2">EXTERNAL APIS</text>
+
+  <!-- Oura API -->
+  <rect x="860" y="1320" width="230" height="95" rx="12" fill="#1A1608" stroke="#D4AF37" stroke-opacity="0.3" stroke-width="1" filter="url(#softShadow)"/>
+  <rect x="878" y="1332" width="60" height="20" rx="5" fill="url(#ouraGrad)"/>
+  <text x="890" y="1346" font-size="9" font-weight="700" fill="#1A1608">OURA</text>
+  <text x="878" y="1366" font-size="9" font-weight="600" fill="#FDE68A">Oura Ring API v2</text>
+  <text x="878" y="1380" font-size="8" fill="#D4AF37">Sleep, readiness, activity</text>
+  <text x="878" y="1393" font-size="8" fill="#D4AF37">Bearer token (per-user setting)</text>
+  <text x="878" y="1406" font-size="8" fill="#D4AF37">Daily sync at 6:00 AM UTC</text>
+
+  <!-- Weather API -->
+  <rect x="1110" y="1320" width="230" height="95" rx="12" fill="#0A1525" stroke="#3B82F6" stroke-opacity="0.3" stroke-width="1" filter="url(#softShadow)"/>
+  <rect x="1128" y="1332" width="95" height="20" rx="5" fill="url(#weatherGrad)"/>
+  <text x="1138" y="1346" font-size="9" font-weight="700" fill="#fff">OPEN-METEO</text>
+  <text x="1128" y="1366" font-size="9" font-weight="600" fill="#93C5FD">Weather API (free)</text>
+  <text x="1128" y="1380" font-size="8" fill="#60A5FA">Barometric pressure, temp, humidity</text>
+  <text x="1128" y="1393" font-size="8" fill="#60A5FA">Forecast + archive endpoints</text>
+  <text x="1128" y="1406" font-size="8" fill="#60A5FA">Daily sync at 5:00 AM UTC</text>
+
+  <!-- Arrows from services to external APIs -->
+  <!-- OuraService → Oura API -->
+  <path d="M280,1169 L280,1195 Q280,1205 290,1205 L850,1205 Q860,1205 860,1215 L860,1270 Q860,1280 870,1280 L950,1280 Q960,1280 960,1290 L960,1320" fill="none" stroke="#D4AF37" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arrowGold)" opacity="0.5"/>
+
+  <!-- WeatherService → Weather API -->
+  <path d="M495,1169 L495,1195 Q495,1205 505,1205 L1080,1205 Q1090,1205 1090,1215 L1090,1270 Q1090,1280 1100,1280 L1200,1280 Q1210,1280 1210,1290 L1210,1320" fill="none" stroke="#3B82F6" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arrowBlue)" opacity="0.5"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- SCHEDULER CRON TABLE (bottom right)                                 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <rect x="860" y="1430" width="480" height="85" rx="12" fill="#1A1128" stroke="#8B5CF6" stroke-opacity="0.2" stroke-width="1"/>
+  <text x="878" y="1452" font-size="10" font-weight="700" fill="#C4B5FD">Scheduled Jobs (APScheduler)</text>
+  <text x="878" y="1470" font-size="9" fill="#9B8CB5">05:00 UTC    WeatherService.sync()     all active users</text>
+  <text x="878" y="1484" font-size="9" fill="#9B8CB5">06:00 UTC    OuraService.sync()        all active users</text>
+  <text x="878" y="1498" font-size="9" fill="#9B8CB5">07:00 UTC    AnalyticsService.compute() all active users</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- INFRASTRUCTURE FOOTER                                               -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <rect x="60" y="1545" width="1280" height="110" rx="16" fill="#1A1128" stroke="#8B5CF6" stroke-opacity="0.1" stroke-width="1"/>
+  <text x="80" y="1570" font-size="11" font-weight="700" fill="#A78BFA" letter-spacing="2">INFRASTRUCTURE &amp; DEPLOYMENT</text>
+
+  <!-- Vercel box -->
+  <rect x="90" y="1585" width="240" height="55" rx="8" fill="#1E1533" stroke="#8B5CF6" stroke-opacity="0.2"/>
+  <text x="108" y="1604" font-size="10" font-weight="700" fill="#E2D9F3">Vercel (Hobby — $0)</text>
+  <text x="108" y="1618" font-size="8" fill="#9B8CB5">Frontend: Next.js auto-deploy on push</text>
+  <text x="108" y="1630" font-size="8" fill="#9B8CB5">Global CDN, HTTPS, preview deploys</text>
+
+  <!-- Render box -->
+  <rect x="350" y="1585" width="240" height="55" rx="8" fill="#1E1533" stroke="#46E3B7" stroke-opacity="0.2"/>
+  <text x="368" y="1604" font-size="10" font-weight="700" fill="#E2D9F3">Render (Free — $0)</text>
+  <text x="368" y="1618" font-size="8" fill="#9B8CB5">Backend: Python 3.12, Uvicorn</text>
+  <text x="368" y="1630" font-size="8" fill="#9B8CB5">Persistent Disk 1GB, cold starts ~30s</text>
+
+  <!-- Docker box -->
+  <rect x="610" y="1585" width="240" height="55" rx="8" fill="#1E1533" stroke="#2563EB" stroke-opacity="0.2"/>
+  <text x="628" y="1604" font-size="10" font-weight="700" fill="#E2D9F3">Docker Compose (Dev)</text>
+  <text x="628" y="1618" font-size="8" fill="#9B8CB5">backend (Python 3.12) + frontend (Node 22)</text>
+  <text x="628" y="1630" font-size="8" fill="#9B8CB5">Shared SQLite volume, hot-reload</text>
+
+  <!-- Git box -->
+  <rect x="870" y="1585" width="240" height="55" rx="8" fill="#1E1533" stroke="#C4B5FD" stroke-opacity="0.2"/>
+  <text x="888" y="1604" font-size="10" font-weight="700" fill="#E2D9F3">GitHub → CI/CD</text>
+  <text x="888" y="1618" font-size="8" fill="#9B8CB5">Push to main → Vercel auto-deploy</text>
+  <text x="888" y="1630" font-size="8" fill="#9B8CB5">Push to main → Render auto-deploy</text>
+
+  <!-- Total cost -->
+  <rect x="1140" y="1585" width="180" height="55" rx="8" fill="#2D1F4E" stroke="#8B5CF6" stroke-opacity="0.3"/>
+  <text x="1160" y="1605" font-size="11" font-weight="700" fill="#E9D5FF">Total Cost</text>
+  <text x="1160" y="1624" font-size="22" font-weight="800" fill="#A855F7">$0</text>
+  <text x="1202" y="1624" font-size="10" fill="#9B8CB5">/month</text>
+  <text x="1160" y="1636" font-size="8" fill="#7C6F94">(free tier everywhere)</text>
+</svg>
