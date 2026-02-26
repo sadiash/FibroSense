@@ -34,6 +34,8 @@ frontend/node_modules/
 
 # Database
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
 
@@ -59,3 +61,6 @@ backend/alembic/versions/__pycache__/
 
 # Codacy
 .codacy/
+
+# Claude Code
+.claude/
