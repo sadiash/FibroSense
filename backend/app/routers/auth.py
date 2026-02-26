@@ -10,6 +10,7 @@ from app.auth import (
     hash_password,
     verify_password,
 )
+from app.config import settings
 from app.database import get_session
 from app.models.user import User
 from app.schemas.auth import TokenResponse, UserLogin, UserRegister, UserResponse, UserUpdate
@@ -26,7 +27,7 @@ def _set_refresh_cookie(response: Response, token: str) -> None:
         value=token,
         httponly=True,
         samesite="lax",
-        secure=False,  # Set True in production with HTTPS
+        secure=settings.is_production,
         max_age=COOKIE_MAX_AGE,
         path="/api/auth",
     )

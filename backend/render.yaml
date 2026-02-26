@@ -3,10 +3,20 @@ services:
     name: fibrosense-api
     runtime: python
     rootDir: backend
-    buildCommand: pip install .
+    buildCommand: pip install . && python -m alembic upgrade head
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:////data/fibrosense.db
       - key: CORS_ORIGINS
-        value: http://localhost:3000
+        sync: false
       - key: PYTHON_VERSION
         value: "3.12"
+    disk:
+      name: fibrosense-data
+      mountPath: /data
+      sizeGB: 1
