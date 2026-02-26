@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { SymptomLog, BiometricReading, ContextualData } from "@/lib/types";
 import { parseISO, subDays, format } from "date-fns";
+import { WarningIcon, MinusIcon } from "@phosphor-icons/react";
 
 interface FlareSignalsProps {
   logs: SymptomLog[];
@@ -137,9 +138,7 @@ export function FlareSignals({
     return (
       <div className="rounded-2xl bg-card border border-border/50 p-6 text-center">
         <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-2">
-          <svg className="h-5 w-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-          </svg>
+          <WarningIcon className="h-5 w-5 text-muted-foreground" weight="duotone" />
         </div>
         <p className="text-xs text-muted-foreground">
           Need at least 2 logged flares to identify early warning signals
@@ -153,10 +152,7 @@ export function FlareSignals({
       <div className="p-5 pb-0">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
-            <svg className="h-4 w-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-              <path d="M12 9v4M12 17h.01" />
-            </svg>
+            <WarningIcon className="h-4 w-4 text-orange-500" weight="duotone" />
           </div>
           <div>
             <h3 className="text-sm font-semibold">Flare Early Warnings</h3>
@@ -188,9 +184,7 @@ export function FlareSignals({
                   <span className="text-[10px] text-muted-foreground">
                     Baseline: {s.baseline.toFixed(1)}{s.unit}
                   </span>
-                  <svg className="h-3 w-3 text-muted-foreground shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path d="M5 12h14" strokeLinecap="round" />
-                  </svg>
+                  <MinusIcon className="h-3 w-3 text-muted-foreground shrink-0" weight="bold" />
                   <span
                     className={`text-[10px] font-bold whitespace-nowrap ${
                       isWorse

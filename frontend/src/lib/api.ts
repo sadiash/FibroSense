@@ -35,6 +35,10 @@ export async function createSymptomLog(
   });
 }
 
+export async function deleteSymptomLog(id: number): Promise<void> {
+  await fetch(`/api/symptoms/${id}`, { method: "DELETE" });
+}
+
 // Medications
 export async function getMedications(
   activeOnly = true
@@ -112,6 +116,30 @@ export async function triggerSync(
   source: "oura" | "weather"
 ): Promise<{ status: string; records_synced: number; error_message: string | null }> {
   return apiFetch(`/api/sync/${source}`, { method: "POST" });
+}
+
+// Demo Data
+export interface DemoDataStatus {
+  has_demo_data: boolean;
+  biometric_readings_count: number;
+  symptom_logs_count: number;
+  contextual_data_count: number;
+  medications_count: number;
+  sync_log_count: number;
+}
+
+export interface DemoDataClearResult {
+  status: string;
+  records_deleted: number;
+  error_message: string | null;
+}
+
+export async function getDemoDataStatus(): Promise<DemoDataStatus> {
+  return apiFetch<DemoDataStatus>("/api/demo-data/status");
+}
+
+export async function clearDemoData(): Promise<DemoDataClearResult> {
+  return apiFetch<DemoDataClearResult>("/api/demo-data", { method: "DELETE" });
 }
 
 // Export

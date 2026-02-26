@@ -2,15 +2,17 @@
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { SymptomLog, STRESS_EVENT_LABELS, StressEvent } from "@/lib/types";
+import { SymptomLog, ContextualData, STRESS_EVENT_LABELS, StressEvent, DIET_FLAG_LABELS, DietFlag } from "@/lib/types";
+import { LightningIcon } from "@phosphor-icons/react";
 
 interface TriggerBreakdownProps {
   logs: SymptomLog[];
+  contextual?: ContextualData[];
 }
 
 interface TriggerStat {
   label: string;
-  category: "stress" | "menstrual" | "exercise";
+  category: "stress" | "menstrual" | "exercise" | "diet";
   avgPain: number;
   avgFatigue: number;
   count: number;
@@ -21,6 +23,7 @@ const categoryStyle = {
   stress: { bg: "bg-rose-500/10", text: "text-rose-500", dot: "bg-rose-500" },
   menstrual: { bg: "bg-violet-500/10", text: "text-violet-500", dot: "bg-violet-500" },
   exercise: { bg: "bg-teal-500/10", text: "text-teal-500", dot: "bg-teal-500" },
+  diet: { bg: "bg-orange-500/10", text: "text-orange-500", dot: "bg-orange-500" },
 };
 
 const phaseLabels: Record<string, string> = {
@@ -30,32 +33,57 @@ const phaseLabels: Record<string, string> = {
   luteal: "Luteal",
 };
 
-export function TriggerBreakdown({ logs }: TriggerBreakdownProps) {
+export function TriggerBreakdown({ logs, contextual }: TriggerBreakdownProps) {
   const { triggers, baseline } = useMemo(() => {
     if (!logs.length) return { triggers: [], baseline: 0 };
+
+    // Build a date->contextual lookup so we can merge contextual factors into logs
+    const ctxByDate = new Map<string, ContextualData>();
+    if (contextual) {
+      for (const c of contextual) {
+        ctxByDate.set(c.date, c);
+      }
+    }
 
     const base =
       logs.reduce((s, l) => s + l.pain_severity, 0) / logs.length;
 
     const stressMap = new Map<string, { pain: number[]; fatigue: number[] }>();
     const phaseMap = new Map<string, { pain: number[]; fatigue: number[] }>();
+    const dietMap = new Map<string, { pain: number[]; fatigue: number[] }>();
     const exerciseYes: { pain: number[]; fatigue: number[] } = { pain: [], fatigue: [] };
     const exerciseNo: { pain: number[]; fatigue: number[] } = { pain: [], fatigue: [] };
 
     for (const log of logs) {
-      if (log.stress_event) {
-        const existing = stressMap.get(log.stress_event) ?? { pain: [], fatigue: [] };
+      const ctx = ctxByDate.get(log.date);
+      const stressEvent = log.stress_event ?? ctx?.stress_event;
+      const menstrualPhase = log.menstrual_phase ?? ctx?.menstrual_phase;
+      const exerciseType = log.exercise_type ?? ctx?.exercise_type;
+      const dietFlags = ctx?.diet_flags;
+
+      if (stressEvent) {
+        const existing = stressMap.get(stressEvent) ?? { pain: [], fatigue: [] };
         existing.pain.push(log.pain_severity);
         existing.fatigue.push(log.fatigue_severity);
-        stressMap.set(log.stress_event, existing);
+        stressMap.set(stressEvent, existing);
       }
-      if (log.menstrual_phase && log.menstrual_phase !== "not_applicable") {
-        const existing = phaseMap.get(log.menstrual_phase) ?? { pain: [], fatigue: [] };
+      if (menstrualPhase && menstrualPhase !== "not_applicable") {
+        const existing = phaseMap.get(menstrualPhase) ?? { pain: [], fatigue: [] };
         existing.pain.push(log.pain_severity);
         existing.fatigue.push(log.fatigue_severity);
-        phaseMap.set(log.menstrual_phase, existing);
+        phaseMap.set(menstrualPhase, existing);
       }
-      if (log.exercise_type) {
+      if (dietFlags) {
+        for (const flag of dietFlags.split(",")) {
+          const trimmed = flag.trim();
+          if (!trimmed) continue;
+          const existing = dietMap.get(trimmed) ?? { pain: [], fatigue: [] };
+          existing.pain.push(log.pain_severity);
+          existing.fatigue.push(log.fatigue_severity);
+          dietMap.set(trimmed, existing);
+        }
+      }
+      if (exerciseType) {
         exerciseYes.pain.push(log.pain_severity);
         exerciseYes.fatigue.push(log.fatigue_severity);
       } else {
@@ -94,6 +122,20 @@ export function TriggerBreakdown({ logs }: TriggerBreakdownProps) {
       });
     });
 
+    dietMap.forEach((data, key) => {
+      if (data.pain.length < 2) return;
+      const avg = data.pain.reduce((s, v) => s + v, 0) / data.pain.length;
+      const avgF = data.fatigue.reduce((s, v) => s + v, 0) / data.fatigue.length;
+      result.push({
+        label: DIET_FLAG_LABELS[key as DietFlag] ?? key,
+        category: "diet",
+        avgPain: avg,
+        avgFatigue: avgF,
+        count: data.pain.length,
+        delta: avg - base,
+      });
+    });
+
     if (exerciseYes.pain.length >= 2) {
       const avg = exerciseYes.pain.reduce((s, v) => s + v, 0) / exerciseYes.pain.length;
       const avgF = exerciseYes.fatigue.reduce((s, v) => s + v, 0) / exerciseYes.fatigue.length;
@@ -123,7 +165,7 @@ export function TriggerBreakdown({ logs }: TriggerBreakdownProps) {
     const meaningful = result.filter((t) => Math.abs(t.delta) >= 0.1);
     meaningful.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
     return { triggers: meaningful.slice(0, 8), baseline: base };
-  }, [logs]);
+  }, [logs, contextual]);
 
   if (!triggers.length) {
     return (
@@ -131,9 +173,7 @@ export function TriggerBreakdown({ logs }: TriggerBreakdownProps) {
         <div className="p-5 pb-0">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
-              <svg className="h-4 w-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-              </svg>
+              <LightningIcon className="h-4 w-4 text-rose-500" weight="duotone" />
             </div>
             <div>
               <h3 className="text-sm font-semibold">Trigger Breakdown</h3>
@@ -146,7 +186,7 @@ export function TriggerBreakdown({ logs }: TriggerBreakdownProps) {
         <div className="p-5">
           <div className="rounded-xl bg-muted/20 p-4 text-center">
             <p className="text-xs text-muted-foreground">
-              Start logging stress events, exercise, and menstrual phase in your daily entries to see how they affect your symptoms.
+              Start logging stress events, exercise, diet, and menstrual phase in your daily entries to see how they affect your symptoms.
             </p>
           </div>
         </div>
@@ -161,9 +201,7 @@ export function TriggerBreakdown({ logs }: TriggerBreakdownProps) {
       <div className="p-5 pb-0">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
-            <svg className="h-4 w-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </svg>
+            <LightningIcon className="h-4 w-4 text-rose-500" weight="duotone" />
           </div>
           <div>
             <h3 className="text-sm font-semibold">Trigger Breakdown</h3>

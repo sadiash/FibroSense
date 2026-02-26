@@ -17,6 +17,8 @@ interface ScatterPlotProps {
   metricB: string;
   data: Array<{ x: number; y: number }>;
   correlation?: number;
+  pValue?: number;
+  sampleSize?: number;
 }
 
 const metricLabels: Record<string, string> = {
@@ -48,7 +50,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<
   );
 }
 
-export function ScatterPlot({ metricA, metricB, data, correlation }: ScatterPlotProps) {
+export function ScatterPlot({ metricA, metricB, data, correlation, pValue, sampleSize }: ScatterPlotProps) {
   if (!metricA || !metricB) {
     return null;
   }
@@ -77,17 +79,29 @@ export function ScatterPlot({ metricA, metricB, data, correlation }: ScatterPlot
             {data.length} data points
           </p>
         </div>
-        {correlation !== undefined && (
-          <div
-            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold border ${
-              correlation > 0
-                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
-            }`}
-          >
-            r = {correlation.toFixed(3)}
-          </div>
-        )}
+        <div className="flex items-center gap-1.5">
+          {correlation !== undefined && (
+            <div
+              className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold border ${
+                correlation > 0
+                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                  : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+              }`}
+            >
+              r = {correlation.toFixed(3)}
+            </div>
+          )}
+          {pValue !== undefined && (
+            <span className={`text-[10px] font-medium tabular-nums ${pValue < 0.05 ? "text-emerald-500" : "text-muted-foreground"}`}>
+              p={pValue.toFixed(3)}
+            </span>
+          )}
+          {sampleSize !== undefined && (
+            <span className="text-[9px] text-muted-foreground tabular-nums">
+              n={sampleSize}
+            </span>
+          )}
+        </div>
       </div>
 
       {data.length === 0 ? (

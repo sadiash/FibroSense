@@ -70,6 +70,7 @@ export interface SymptomLogCreate {
   medication_change?: string | null;
   exercise_type?: string | null;
   exercise_rpe?: number | null;
+  diet_flags?: string | null;
 }
 
 export interface Medication {
@@ -165,6 +166,7 @@ export interface ContextualData {
   medication_change: string | null;
   exercise_type: string | null;
   exercise_rpe: number | null;
+  diet_flags: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -347,6 +349,26 @@ export const MENSTRUAL_PHASE_OPTIONS: {
     description: "",
   },
 ];
+
+export const DIET_FLAGS = [
+  "alcohol",
+  "high_sugar",
+  "processed_food",
+  "caffeine_excess",
+  "gluten",
+  "dairy",
+] as const;
+
+export type DietFlag = (typeof DIET_FLAGS)[number];
+
+export const DIET_FLAG_LABELS: Record<DietFlag, string> = {
+  alcohol: "Alcohol",
+  high_sugar: "High Sugar",
+  processed_food: "Processed Food",
+  caffeine_excess: "Excess Caffeine",
+  gluten: "Gluten",
+  dairy: "Dairy",
+};
 
 export const STRESS_EVENTS = [
   "work_deadline",

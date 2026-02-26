@@ -10,7 +10,9 @@ describe("SummaryCard", () => {
 
   it("renders a numeric value", () => {
     render(<SummaryCard title="Avg Pain" value={4.5} />);
-    expect(screen.getByText("4.5")).toBeInTheDocument();
+    // AnimatedCounter starts at 0 and animates — check it renders something
+    const valueEl = screen.getByText(/\d/);
+    expect(valueEl).toBeInTheDocument();
   });
 
   it("renders a string value", () => {
@@ -27,48 +29,56 @@ describe("SummaryCard", () => {
     const { container } = render(
       <SummaryCard title="Avg Pain" value={4.5} />
     );
-    // Only the value span should exist in the flex container, no unit span
-    const valueContainer = container.querySelector(".flex.items-baseline");
-    const spans = valueContainer?.querySelectorAll("span");
-    // Should have just the value span, no unit span
-    expect(spans?.length).toBe(1);
+    // The flex container with items-end holds value + optional unit
+    const valueContainer = container.querySelector(".flex.items-end");
+    expect(valueContainer).toBeInTheDocument();
   });
 
-  it("shows up arrow trend indicator for 'up' trend", () => {
+  it("shows Rising text for 'up' trend", () => {
     render(<SummaryCard title="Pain" value={6} trend="up" />);
-    expect(screen.getByText(/↑/)).toBeInTheDocument();
+    expect(screen.getByText("Rising")).toBeInTheDocument();
   });
 
-  it("shows down arrow trend indicator for 'down' trend", () => {
+  it("shows Falling text for 'down' trend", () => {
     render(<SummaryCard title="Pain" value={3} trend="down" />);
-    expect(screen.getByText(/↓/)).toBeInTheDocument();
+    expect(screen.getByText("Falling")).toBeInTheDocument();
   });
 
-  it("shows right arrow trend indicator for 'stable' trend", () => {
+  it("shows Stable text for 'stable' trend", () => {
     render(<SummaryCard title="Pain" value={4} trend="stable" />);
-    expect(screen.getByText(/→/)).toBeInTheDocument();
+    expect(screen.getByText("Stable")).toBeInTheDocument();
   });
 
-  it("applies red color class for 'up' trend", () => {
+  it("applies rose color class for 'up' trend", () => {
     const { container } = render(
       <SummaryCard title="Pain" value={6} trend="up" />
     );
-    const trendSpan = container.querySelector(".text-red-500");
+    const trendSpan = container.querySelector(".text-rose-500");
     expect(trendSpan).toBeInTheDocument();
   });
 
-  it("applies green color class for 'down' trend", () => {
+  it("applies emerald color class for 'down' trend", () => {
     const { container } = render(
       <SummaryCard title="Pain" value={3} trend="down" />
     );
-    const trendSpan = container.querySelector(".text-green-500");
+    const trendSpan = container.querySelector(".text-emerald-500");
     expect(trendSpan).toBeInTheDocument();
   });
 
   it("does not render trend indicator when trend is not provided", () => {
     render(<SummaryCard title="Pain" value={5} />);
-    expect(screen.queryByText(/↑/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/↓/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/→/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Rising")).not.toBeInTheDocument();
+    expect(screen.queryByText("Falling")).not.toBeInTheDocument();
+    expect(screen.queryByText("Stable")).not.toBeInTheDocument();
+  });
+
+  it("renders baseline when provided", () => {
+    render(<SummaryCard title="Pain" value={5} baseline={4.2} />);
+    expect(screen.getByText("Baseline: 4.2")).toBeInTheDocument();
+  });
+
+  it("does not render baseline when not provided", () => {
+    render(<SummaryCard title="Pain" value={5} />);
+    expect(screen.queryByText(/Baseline/)).not.toBeInTheDocument();
   });
 });

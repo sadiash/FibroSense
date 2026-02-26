@@ -126,6 +126,7 @@ export const mockContextualData: ContextualData[] = Array.from(
     medication_change: null,
     exercise_type: null,
     exercise_rpe: null,
+    diet_flags: null,
     created_at: now,
     updated_at: now,
   })

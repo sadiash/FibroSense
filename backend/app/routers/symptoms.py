@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
+from app.models.contextual import ContextualData
 from app.models.symptom import SymptomLog
 from app.schemas.symptom import SymptomLogCreate, SymptomLogResponse, SymptomLogUpdate
 
@@ -38,6 +39,27 @@ async def create_symptom_log(
         ),
     )
     session.add(log)
+
+    # Upsert contextual data if any contextual fields are provided
+    ctx_fields = {
+        "menstrual_phase": data.menstrual_phase,
+        "stress_event": data.stress_event,
+        "medication_change": data.medication_change,
+        "exercise_type": data.exercise_type,
+        "exercise_rpe": data.exercise_rpe if data.exercise_type else None,
+        "diet_flags": data.diet_flags,
+    }
+    if any(v is not None for v in ctx_fields.values()):
+        existing_ctx = await session.get(ContextualData, data.date)
+        if existing_ctx:
+            for field, value in ctx_fields.items():
+                if value is not None:
+                    setattr(existing_ctx, field, value)
+            existing_ctx.updated_at = datetime.now(timezone.utc).isoformat()
+        else:
+            ctx = ContextualData(date=data.date, **ctx_fields)
+            session.add(ctx)
+
     await session.commit()
     await session.refresh(log)
     return log

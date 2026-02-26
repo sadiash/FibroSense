@@ -29,7 +29,13 @@ async def get_correlation_matrix(
         .order_by(CorrelationCache.computed_at.desc())
     )
     result = await session.execute(stmt)
-    return list(result.scalars().all())
+    cached = list(result.scalars().all())
+    if cached:
+        return cached
+
+    # Auto-compute on first access when cache is empty
+    service = AnalyticsService(session)
+    return await service.compute_correlations()
 
 
 @router.post("/compute", response_model=list[CorrelationResponse])

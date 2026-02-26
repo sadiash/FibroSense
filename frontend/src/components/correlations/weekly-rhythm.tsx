@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { SymptomLog } from "@/lib/types";
 import { parseISO, getDay } from "date-fns";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
 
 interface WeeklyRhythmProps {
   logs: SymptomLog[];
@@ -107,10 +108,7 @@ export function WeeklyRhythm({ logs }: WeeklyRhythmProps) {
       <div className="p-5 pb-0">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
-            <svg className="h-4 w-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" />
-              <path d="M16 2v4M8 2v4M3 10h18" />
-            </svg>
+            <CalendarDotsIcon className="h-4 w-4 text-amber-500" weight="duotone" />
           </div>
           <div>
             <h3 className="text-sm font-semibold">Weekly Rhythm</h3>

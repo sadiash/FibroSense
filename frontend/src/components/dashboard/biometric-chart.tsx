@@ -13,11 +13,15 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
+import { HeartbeatIcon } from "@phosphor-icons/react";
 
 interface BiometricChartProps {
   biometrics: BiometricReading[];
   isLoading?: boolean;
+  sleepBaseline?: number | null;
+  hrvBaseline?: number | null;
 }
 
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) {
@@ -40,18 +44,14 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   );
 }
 
-export function BiometricChart({ biometrics, isLoading }: BiometricChartProps) {
+export function BiometricChart({ biometrics, isLoading, sleepBaseline, hrvBaseline }: BiometricChartProps) {
   if (isLoading) return <ChartSkeleton />;
   if (!biometrics.length)
     return (
       <EmptyState
         title="No biometric data"
         description="Sync your Oura Ring to see biometrics"
-        icon={
-          <svg className="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-          </svg>
-        }
+        icon={<HeartbeatIcon className="h-10 w-10" weight="duotone" />}
       />
     );
 
@@ -126,6 +126,24 @@ export function BiometricChart({ biometrics, isLoading }: BiometricChartProps) {
               tickMargin={8}
             />
             <Tooltip content={<CustomTooltip />} />
+            {sleepBaseline != null && (
+              <ReferenceLine
+                yAxisId="left"
+                y={Math.round(sleepBaseline * 10) / 10}
+                stroke="#6366f1"
+                strokeDasharray="4 4"
+                strokeOpacity={0.5}
+              />
+            )}
+            {hrvBaseline != null && (
+              <ReferenceLine
+                yAxisId="right"
+                y={Math.round(hrvBaseline)}
+                stroke="#10b981"
+                strokeDasharray="4 4"
+                strokeOpacity={0.5}
+              />
+            )}
             <Bar
               yAxisId="left"
               dataKey="Sleep"

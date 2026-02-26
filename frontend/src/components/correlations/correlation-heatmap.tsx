@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { CorrelationResult } from "@/lib/types";
 import { ChartSkeleton } from "@/components/shared/loading-skeleton";
 import { cn } from "@/lib/utils";
+import { GridFourIcon } from "@phosphor-icons/react";
 
 interface CorrelationHeatmapProps {
   correlations: CorrelationResult[];
@@ -88,17 +89,22 @@ export function CorrelationHeatmap({
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [hoveredCol, setHoveredCol] = useState<string | null>(null);
 
-  const { metrics, corrMap } = useMemo(() => {
+  const [hoveredData, setHoveredData] = useState<{ val: number; pValue: number; sampleSize: number; x: number; y: number } | null>(null);
+
+  const { metrics, corrMap, fullCorrMap } = useMemo(() => {
     const available = new Set(
       correlations.flatMap((c) => [c.metric_a, c.metric_b])
     );
     const m = METRIC_ORDER.filter((k) => available.has(k));
     const map = new Map<string, number>();
+    const fullMap = new Map<string, CorrelationResult>();
     correlations.forEach((c) => {
       map.set(`${c.metric_a}-${c.metric_b}`, c.correlation_coefficient);
       map.set(`${c.metric_b}-${c.metric_a}`, c.correlation_coefficient);
+      fullMap.set(`${c.metric_a}-${c.metric_b}`, c);
+      fullMap.set(`${c.metric_b}-${c.metric_a}`, c);
     });
-    return { metrics: m, corrMap: map };
+    return { metrics: m, corrMap: map, fullCorrMap: fullMap };
   }, [correlations]);
 
   if (isLoading) return <ChartSkeleton />;
@@ -122,10 +128,7 @@ export function CorrelationHeatmap({
         <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-              <svg className="h-4 w-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M3 9h18M9 3v18" />
-              </svg>
+              <GridFourIcon className="h-4 w-4 text-indigo-500" weight="duotone" />
             </div>
             <div>
               <h3 className="text-sm font-semibold">Correlation Matrix</h3>
@@ -225,14 +228,28 @@ export function CorrelationHeatmap({
                     return (
                       <td
                         key={col}
-                        className="p-0.5"
-                        onMouseEnter={() => {
+                        className="p-0.5 relative"
+                        onMouseEnter={(e) => {
                           setHoveredRow(row);
                           setHoveredCol(col);
+                          if (!isDiag) {
+                            const fullCorr = fullCorrMap.get(`${row}-${col}`);
+                            if (fullCorr) {
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setHoveredData({
+                                val,
+                                pValue: fullCorr.p_value,
+                                sampleSize: fullCorr.sample_size,
+                                x: rect.left + rect.width / 2,
+                                y: rect.top,
+                              });
+                            }
+                          }
                         }}
                         onMouseLeave={() => {
                           setHoveredRow(null);
                           setHoveredCol(null);
+                          setHoveredData(null);
                         }}
                       >
                         {isDiag ? (
@@ -264,6 +281,31 @@ export function CorrelationHeatmap({
             })}
           </tbody>
         </table>
+
+        {/* Hover tooltip */}
+        {hoveredData && hoveredRow && hoveredCol && (
+          <div
+            className="fixed z-50 pointer-events-none glass-strong rounded-lg p-2 shadow-lg border border-border/50"
+            style={{
+              left: hoveredData.x,
+              top: hoveredData.y - 8,
+              transform: "translate(-50%, -100%)",
+            }}
+          >
+            <div className="text-[10px] space-y-0.5">
+              <div className="font-medium">
+                {metricLabels[hoveredRow] ?? hoveredRow} &harr; {metricLabels[hoveredCol] ?? hoveredCol}
+              </div>
+              <div className="flex gap-2 text-muted-foreground">
+                <span>r={hoveredData.val.toFixed(3)}</span>
+                <span className={hoveredData.pValue < 0.05 ? "text-emerald-500" : ""}>
+                  p={hoveredData.pValue.toFixed(3)}
+                </span>
+                <span>n={hoveredData.sampleSize}</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Category legend */}
         <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/30">

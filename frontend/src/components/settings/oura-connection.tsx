@@ -6,7 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { triggerSync, updateSetting, getSettings } from "@/lib/api";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  triggerSync,
+  updateSetting,
+  getSettings,
+  getDemoDataStatus,
+  clearDemoData,
+} from "@/lib/api";
 
 export function OuraConnection() {
   const [apiKey, setApiKey] = useState("");
@@ -14,6 +28,8 @@ export function OuraConnection() {
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
   const [syncDetail, setSyncDetail] = useState<string | null>(null);
+  const [showDemoPrompt, setShowDemoPrompt] = useState(false);
+  const [clearingDemo, setClearingDemo] = useState(false);
 
   useEffect(() => {
     getSettings().then((settings) => {
@@ -25,14 +41,11 @@ export function OuraConnection() {
     }).catch(() => {});
   }, []);
 
-  async function handleTestConnection() {
-    if (!apiKey) return;
+  async function performSync() {
     setSyncing(true);
     setSyncStatus(null);
     setSyncDetail(null);
     try {
-      await updateSetting("oura_api_key", apiKey);
-      setHasSavedKey(true);
       const result = await triggerSync("oura");
       setSyncStatus(result.status);
       if (result.error_message) {
@@ -48,7 +61,52 @@ export function OuraConnection() {
     }
   }
 
+  async function handleTestConnection() {
+    if (!apiKey) return;
+    setSyncing(true);
+    setSyncStatus(null);
+    setSyncDetail(null);
+    try {
+      await updateSetting("oura_api_key", apiKey);
+      setHasSavedKey(true);
+
+      // Check for demo data before first sync
+      const demoStatus = await getDemoDataStatus();
+      if (demoStatus.has_demo_data) {
+        setSyncing(false);
+        setShowDemoPrompt(true);
+        return;
+      }
+
+      await performSync();
+    } catch (e) {
+      setSyncStatus("error");
+      setSyncDetail(e instanceof Error ? e.message : "Unknown error");
+      setSyncing(false);
+    }
+  }
+
+  async function handleClearAndSync() {
+    setClearingDemo(true);
+    try {
+      await clearDemoData();
+      setShowDemoPrompt(false);
+      await performSync();
+    } catch (e) {
+      setSyncStatus("error");
+      setSyncDetail(e instanceof Error ? e.message : "Unknown error");
+    } finally {
+      setClearingDemo(false);
+    }
+  }
+
+  async function handleKeepAndSync() {
+    setShowDemoPrompt(false);
+    await performSync();
+  }
+
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Oura Ring Connection</CardTitle>
@@ -86,5 +144,34 @@ export function OuraConnection() {
         )}
       </CardContent>
     </Card>
+
+    <Dialog open={showDemoPrompt} onOpenChange={setShowDemoPrompt}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Demo Data Detected</DialogTitle>
+          <DialogDescription>
+            Your database contains fictitious demo data. It&apos;s recommended
+            to clear it before syncing real Oura data to avoid mixing
+            fictitious and real records.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="flex-col gap-2 sm:flex-row">
+          <Button
+            variant="outline"
+            onClick={handleKeepAndSync}
+            disabled={clearingDemo}
+          >
+            Keep demo data & sync
+          </Button>
+          <Button
+            onClick={handleClearAndSync}
+            disabled={clearingDemo}
+          >
+            {clearingDemo ? "Clearing..." : "Clear demo data & sync"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

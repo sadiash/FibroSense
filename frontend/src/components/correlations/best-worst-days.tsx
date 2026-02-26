@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { SymptomLog, BiometricReading, ContextualData } from "@/lib/types";
 import { format, parseISO } from "date-fns";
+import { ArrowsDownUpIcon } from "@phosphor-icons/react";
 
 interface BestWorstDaysProps {
   logs: SymptomLog[];
@@ -169,10 +170,7 @@ export function BestWorstDays({
       <div className="p-5 pb-0">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-            <svg className="h-4 w-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 3v18M3 12h18" />
-              <path d="M16 7l-4-4-4 4M8 17l4 4 4-4" />
-            </svg>
+            <ArrowsDownUpIcon className="h-4 w-4 text-indigo-500" weight="duotone" />
           </div>
           <div>
             <h3 className="text-sm font-semibold">Best vs Worst Days</h3>

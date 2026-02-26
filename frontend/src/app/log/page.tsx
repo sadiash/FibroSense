@@ -19,7 +19,7 @@ export default function LogPage() {
       variants={stagger}
       initial="hidden"
       animate="show"
-      className="max-w-2xl mx-auto space-y-6"
+      className="space-y-4"
     >
       {/* Page header */}
       <motion.div variants={fadeUp}>
@@ -29,20 +29,23 @@ export default function LogPage() {
         </p>
       </motion.div>
 
-      <motion.div variants={fadeUp}>
-        <SymptomLogForm
-          onSubmit={(data) => createLog.mutate(data)}
-          isSubmitting={createLog.isPending}
-        />
-      </motion.div>
+      {/* Two-column layout: form + recent entries */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
+        <motion.div variants={fadeUp}>
+          <SymptomLogForm
+            onSubmit={(data) => createLog.mutate(data)}
+            isSubmitting={createLog.isPending}
+          />
+        </motion.div>
 
-      <motion.div variants={fadeUp}>
-        {isLoading ? (
-          <ListSkeleton count={3} />
-        ) : (
-          <RecentEntries entries={logs ?? []} />
-        )}
-      </motion.div>
+        <motion.div variants={fadeUp}>
+          {isLoading ? (
+            <ListSkeleton count={3} />
+          ) : (
+            <RecentEntries entries={logs ?? []} />
+          )}
+        </motion.div>
+      </div>
     </motion.div>
   );
 }

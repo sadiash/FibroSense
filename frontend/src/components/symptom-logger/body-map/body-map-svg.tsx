@@ -7,18 +7,19 @@ interface BodyMapSvgProps {
   view: "front" | "back";
   selected: string[];
   severityMap: Record<string, number>;
+  isWidespread?: boolean;
   onToggle: (key: string) => void;
 }
 
-export function BodyMapSvg({ view, selected, severityMap, onToggle }: BodyMapSvgProps) {
+export function BodyMapSvg({ view, selected, severityMap, isWidespread, onToggle }: BodyMapSvgProps) {
   const regions = getRegionsForView(view);
   const outline = view === "front" ? FRONT_BODY_OUTLINE : BACK_BODY_OUTLINE;
 
   return (
     <svg
       viewBox="0 0 200 440"
-      className="mx-auto h-auto w-full max-w-[220px]"
-      aria-label="Body map for selecting pain locations"
+      className="mx-auto h-auto w-full max-w-[200px]"
+      aria-label={`Body map ${view} view for selecting pain locations`}
     >
       {/* Background body outline */}
       <path
@@ -67,8 +68,8 @@ export function BodyMapSvg({ view, selected, severityMap, onToggle }: BodyMapSvg
           key={region.id}
           d={region.d}
           label={region.label}
-          active={selected.includes(region.locationKey)}
-          severity={severityMap[region.locationKey]}
+          active={isWidespread || selected.includes(region.locationKey)}
+          severity={isWidespread ? 8 : severityMap[region.locationKey]}
           onClick={() => onToggle(region.locationKey)}
         />
       ))}

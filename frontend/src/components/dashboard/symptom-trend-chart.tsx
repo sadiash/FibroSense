@@ -16,6 +16,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { ChartLineUpIcon } from "@phosphor-icons/react";
 
 interface SymptomTrendChartProps {
   logs: SymptomLog[];
@@ -60,11 +61,7 @@ export function SymptomTrendChart({ logs, isLoading }: SymptomTrendChartProps) {
       <EmptyState
         title="No symptom data"
         description="Log symptoms to see trends"
-        icon={
-          <svg className="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-          </svg>
-        }
+        icon={<ChartLineUpIcon className="h-10 w-10" weight="duotone" />}
       />
     );
 

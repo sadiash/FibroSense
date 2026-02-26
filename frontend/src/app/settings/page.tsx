@@ -3,10 +3,12 @@
 import { motion } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { OuraConnection } from "@/components/settings/oura-connection";
+import { AppleHealthConnection } from "@/components/settings/apple-health-connection";
 import { WeatherLocation } from "@/components/settings/weather-location";
 import { MedicationSettings } from "@/components/settings/medication-settings";
 import { DataExport } from "@/components/settings/data-export";
-import { Separator } from "@/components/ui/separator";
+import { DemoDataManager } from "@/components/settings/demo-data-manager";
+import { InfoIcon } from "@phosphor-icons/react";
 
 export default function SettingsPage() {
   return (
@@ -14,7 +16,7 @@ export default function SettingsPage() {
       variants={stagger}
       initial="hidden"
       animate="show"
-      className="max-w-2xl mx-auto space-y-6"
+      className="space-y-4"
     >
       {/* Page header */}
       <motion.div variants={fadeUp}>
@@ -24,35 +26,42 @@ export default function SettingsPage() {
         </p>
       </motion.div>
 
-      <motion.div variants={fadeUp}>
-        <MedicationSettings />
-      </motion.div>
+      {/* Two-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Left column: tall components */}
+        <div className="space-y-4">
+          <motion.div variants={fadeUp}>
+            <MedicationSettings />
+          </motion.div>
+          <motion.div variants={fadeUp}>
+            <WeatherLocation />
+          </motion.div>
+        </div>
 
-      <motion.div variants={fadeUp}>
-        <OuraConnection />
-      </motion.div>
+        {/* Right column: shorter components */}
+        <div className="space-y-4">
+          <motion.div variants={fadeUp}>
+            <OuraConnection />
+          </motion.div>
+          <motion.div variants={fadeUp}>
+            <AppleHealthConnection />
+          </motion.div>
+          <motion.div variants={fadeUp}>
+            <DataExport />
+          </motion.div>
+          <motion.div variants={fadeUp}>
+            <DemoDataManager />
+          </motion.div>
+        </div>
+      </div>
 
-      <motion.div variants={fadeUp}>
-        <WeatherLocation />
-      </motion.div>
-
-      <motion.div variants={fadeUp}>
-        <DataExport />
-      </motion.div>
-
-      <motion.div variants={fadeUp}>
-        <Separator className="opacity-50" />
-      </motion.div>
-
+      {/* About — full width */}
       <motion.div variants={fadeUp}>
         <div className="rounded-2xl bg-card border border-border/50 overflow-hidden">
           <div className="p-5">
             <div className="flex items-center gap-2 mb-3">
               <div className="h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                <svg className="h-4 w-4 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4M12 8h.01" />
-                </svg>
+                <InfoIcon className="h-4 w-4 text-violet-500" weight="duotone" />
               </div>
               <h3 className="text-sm font-semibold">About FibroSense</h3>
             </div>

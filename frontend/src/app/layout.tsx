@@ -1,6 +1,6 @@
 "use client";
 
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query-client";
@@ -9,8 +9,12 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { Header } from "@/components/layout/header";
 import { AnimatedBackground } from "@/components/layout/animated-background";
 import { Toaster } from "@/components/ui/toaster";
+import { DemoBanner } from "@/components/layout/demo-banner";
+import { DataPrefetch } from "@/components/layout/data-prefetch";
+import { MedicalDisclaimer } from "@/components/shared/medical-disclaimer";
+import { Onboarding } from "@/components/layout/onboarding";
 
-const inter = Inter({ subsets: ["latin"] });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800"] });
 
 export default function RootLayout({
   children,
@@ -20,19 +24,23 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.className} antialiased bg-background text-foreground`}
+        className={`${jakarta.className} antialiased bg-background text-foreground`}
       >
         <QueryClientProvider client={queryClient}>
+          <DataPrefetch />
           <AnimatedBackground />
           <Sidebar />
-          <div className="md:pl-64 min-h-screen flex flex-col">
+          <div className="md:pl-16 min-h-screen flex flex-col">
+            <DemoBanner />
             <Header />
             <main className="flex-1 p-4 md:p-6 pb-24 md:pb-6">
               {children}
+              <MedicalDisclaimer variant="footer" />
             </main>
           </div>
           <MobileNav />
           <Toaster />
+          <Onboarding />
         </QueryClientProvider>
       </body>
     </html>

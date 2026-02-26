@@ -21,6 +21,12 @@ class SymptomLogCreate(BaseModel):
     flare_severity: int | None = Field(default=None, ge=1, le=10)
     notes: str | None = None
     missed_medications: list[int] | None = None
+    menstrual_phase: str | None = None
+    stress_event: str | None = None
+    medication_change: str | None = None
+    exercise_type: str | None = None
+    exercise_rpe: int | None = Field(default=None, ge=1, le=10)
+    diet_flags: str | None = None
 
 
 class SymptomLogUpdate(BaseModel):

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { TrendUpIcon, TrendDownIcon, MinusIcon } from "@phosphor-icons/react";
 
 interface SummaryCardProps {
   title: string;
@@ -10,6 +11,8 @@ interface SummaryCardProps {
   trend?: "up" | "down" | "stable";
   icon?: React.ReactNode;
   color?: "violet" | "teal" | "rose" | "amber";
+  baseline?: number | null;
+  higherIsBetter?: boolean;
 }
 
 const colorMap = {
@@ -91,21 +94,17 @@ export function SummaryCard({
   trend,
   icon,
   color = "violet",
+  baseline,
+  higherIsBetter,
 }: SummaryCardProps) {
   const c = colorMap[color];
   const trendIcon =
     trend === "up" ? (
-      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M7 17l5-5 5 5M7 7l5 5 5-5" />
-      </svg>
+      <TrendUpIcon className="h-3.5 w-3.5" weight="bold" />
     ) : trend === "down" ? (
-      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M7 7l5 5 5-5M7 17l5-5 5 5" />
-      </svg>
+      <TrendDownIcon className="h-3.5 w-3.5" weight="bold" />
     ) : (
-      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M5 12h14" />
-      </svg>
+      <MinusIcon className="h-3.5 w-3.5" weight="bold" />
     );
 
   const trendColor =
@@ -155,6 +154,26 @@ export function SummaryCard({
               {trend === "up" ? "Rising" : trend === "down" ? "Falling" : "Stable"}
             </span>
             <span className="text-[10px] text-muted-foreground">vs last week</span>
+          </div>
+        )}
+
+        {baseline != null && (
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <span className="text-[10px] text-muted-foreground">
+              Baseline: {baseline.toFixed(1)}
+            </span>
+            {(() => {
+              const numVal = typeof value === "string" ? parseFloat(value) : value;
+              if (isNaN(numVal) || baseline === 0) return null;
+              const pct = ((numVal - baseline) / baseline) * 100;
+              if (Math.abs(pct) < 1) return null;
+              const isGood = higherIsBetter ? pct > 0 : pct < 0;
+              return (
+                <span className={`text-[10px] font-medium ${isGood ? "text-emerald-500" : "text-rose-500"}`}>
+                  {pct > 0 ? "+" : ""}{pct.toFixed(0)}%
+                </span>
+              );
+            })()}
           </div>
         )}
       </div>

@@ -48,6 +48,7 @@ function makeLog(overrides: Partial<SymptomLog> = {}): SymptomLog {
     is_flare: false,
     flare_severity: null,
     notes: null,
+    missed_medications: null,
     menstrual_phase: null,
     stress_event: null,
     medication_change: null,

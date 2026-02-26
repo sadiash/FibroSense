@@ -3,30 +3,6 @@ import { describe, it, expect, vi } from "vitest";
 import { CorrelationHeatmap } from "@/components/correlations/correlation-heatmap";
 import type { CorrelationResult } from "@/lib/types";
 
-// Mock d3 to avoid jsdom SVG limitations
-vi.mock("d3", () => ({
-  select: vi.fn(() => {
-    const chainable: Record<string, unknown> = {};
-    const chain = () => chainable;
-    chainable.selectAll = vi.fn(() => chainable);
-    chainable.remove = vi.fn(() => chainable);
-    chainable.attr = vi.fn(() => chainable);
-    chainable.append = vi.fn(() => chainable);
-    chainable.data = vi.fn(() => chainable);
-    chainable.join = vi.fn(() => chainable);
-    chainable.text = vi.fn(() => chainable);
-    chainable.style = vi.fn(() => chainable);
-    chainable.on = vi.fn(() => chainable);
-    return chainable;
-  }),
-  scaleSequential: vi.fn(() => {
-    const scale = (val: number) => `rgb(0,0,0)`;
-    scale.domain = vi.fn(() => scale);
-    return scale;
-  }),
-  interpolateRdBu: vi.fn(),
-}));
-
 function makeCorrelation(
   overrides: Partial<CorrelationResult> = {}
 ): CorrelationResult {
@@ -49,21 +25,21 @@ describe("CorrelationHeatmap", () => {
     expect(screen.getByText("Correlation Matrix")).toBeInTheDocument();
   });
 
-  it("renders an SVG element", () => {
+  it("renders a table element with correlations", () => {
     const correlations = [makeCorrelation()];
     const { container } = render(
       <CorrelationHeatmap correlations={correlations} />
     );
-    const svg = container.querySelector("svg");
-    expect(svg).toBeInTheDocument();
+    const table = container.querySelector("table");
+    expect(table).toBeInTheDocument();
   });
 
   it("renders with empty correlations without crashing", () => {
-    const { container } = render(
-      <CorrelationHeatmap correlations={[]} />
-    );
-    const svg = container.querySelector("svg");
-    expect(svg).toBeInTheDocument();
+    render(<CorrelationHeatmap correlations={[]} />);
+    // Shows empty state message
+    expect(
+      screen.getByText(/No correlation data yet/)
+    ).toBeInTheDocument();
   });
 
   it("accepts an onCellClick callback", () => {
@@ -75,15 +51,13 @@ describe("CorrelationHeatmap", () => {
         onCellClick={onCellClick}
       />
     );
-    // Verify it renders without errors when callback is provided
-    expect(container.querySelector("svg")).toBeInTheDocument();
+    expect(container.querySelector("table")).toBeInTheDocument();
   });
 
   it("shows loading skeleton when isLoading is true", () => {
     render(
       <CorrelationHeatmap correlations={[]} isLoading={true} />
     );
-    // When loading, the card title should not be visible (ChartSkeleton renders instead)
     expect(
       screen.queryByText("Correlation Matrix")
     ).not.toBeInTheDocument();

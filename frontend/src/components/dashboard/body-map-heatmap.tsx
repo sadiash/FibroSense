@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { DateRangePicker } from "@/components/shared/date-range-picker";
 import { BodyMapSvg } from "@/components/symptom-logger/body-map/body-map-svg";
 import { subDays, parseISO, isWithinInterval } from "date-fns";
+import { PersonIcon } from "@phosphor-icons/react";
 
 interface BodyMapHeatmapProps {
   logs: SymptomLog[];
@@ -76,11 +77,7 @@ export function BodyMapHeatmap({ logs, isLoading }: BodyMapHeatmapProps) {
       <EmptyState
         title="No pain location data"
         description="Log symptoms with body locations to see your heatmap"
-        icon={
-          <svg className="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2a4 4 0 014 4v1a4 4 0 01-8 0V6a4 4 0 014-4zM6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
-          </svg>
-        }
+        icon={<PersonIcon className="h-10 w-10" weight="duotone" />}
       />
     );
 
@@ -102,9 +99,7 @@ export function BodyMapHeatmap({ logs, isLoading }: BodyMapHeatmapProps) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 pb-0 gap-3">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-            <svg className="h-4 w-4 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2a4 4 0 014 4v1a4 4 0 01-8 0V6a4 4 0 014-4zM6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
-            </svg>
+            <PersonIcon className="h-4 w-4 text-violet-500" weight="duotone" />
           </div>
           <div>
             <h3 className="text-sm font-semibold">Pain Location Heatmap</h3>

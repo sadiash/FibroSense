@@ -16,7 +16,7 @@ export function AnimatedBackground() {
       <div
         className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-[0.05] animate-blob-2"
         style={{
-          background: "radial-gradient(circle, hsl(var(--glow-teal)), transparent 70%)",
+          background: "radial-gradient(circle, hsl(var(--glow-lavender)), transparent 70%)",
         }}
       />
       <div

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getSymptomLogs, createSymptomLog } from "@/lib/api";
+import { getSymptomLogs, createSymptomLog, deleteSymptomLog } from "@/lib/api";
 import { SymptomLogCreate } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,6 +18,21 @@ export function useCreateSymptomLog() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["symptom-logs"] });
       toast({ title: "Entry saved", description: "Symptom log recorded successfully." });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+}
+
+export function useDeleteSymptomLog() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  return useMutation({
+    mutationFn: (id: number) => deleteSymptomLog(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["symptom-logs"] });
+      toast({ title: "Entry deleted", description: "Symptom log removed." });
     },
     onError: (error: Error) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });

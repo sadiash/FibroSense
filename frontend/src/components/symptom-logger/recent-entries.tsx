@@ -1,42 +1,86 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { SymptomLog, PAIN_LOCATION_LABELS, type PainLocation } from "@/lib/types";
+import { useDeleteSymptomLog } from "@/lib/hooks/use-symptom-logs";
 import { format, parseISO } from "date-fns";
 import { EmptyState } from "@/components/shared/empty-state";
+import { TrashIcon, XIcon } from "@phosphor-icons/react";
 
 interface RecentEntriesProps {
   entries: SymptomLog[];
 }
 
 export function RecentEntries({ entries }: RecentEntriesProps) {
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
+  const deleteMutation = useDeleteSymptomLog();
+
+  function handleDelete(id: number) {
+    deleteMutation.mutate(id, {
+      onSettled: () => setConfirmingId(null),
+    });
+  }
+
   if (entries.length === 0) {
     return (
-      <EmptyState
-        title="No entries yet"
-        description="Log your first symptom entry above"
-      />
+      <div className="lg:sticky lg:top-20">
+        <EmptyState
+          title="No entries yet"
+          description="Log your first symptom entry"
+        />
+      </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="lg:sticky lg:top-20 space-y-2">
       <h3 className="text-sm font-medium text-muted-foreground">
         Recent Entries
       </h3>
       {entries.slice(0, 7).map((entry) => (
-        <Card key={entry.id} className="p-0">
+        <Card key={entry.id} className="p-0 group">
           <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
                 {format(parseISO(entry.date), "MMM d")}
               </span>
-              <div className="flex gap-1">
+              <div className="flex items-center gap-1">
                 {entry.is_flare && (
                   <Badge variant="destructive" className="text-xs">
                     Flare
                   </Badge>
+                )}
+                {confirmingId === entry.id ? (
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="h-6 px-2 text-xs"
+                      onClick={() => handleDelete(entry.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      {deleteMutation.isPending ? "..." : "Delete"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                      onClick={() => setConfirmingId(null)}
+                    >
+                      <XIcon className="h-3 w-3" weight="bold" />
+                    </Button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingId(entry.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive p-1 rounded"
+                  >
+                    <TrashIcon className="h-3.5 w-3.5" weight="duotone" />
+                  </button>
                 )}
               </div>
             </div>

@@ -15,6 +15,14 @@ import { useSymptomLogs } from "@/lib/hooks/use-symptom-logs";
 import { useBiometrics, useContextualData } from "@/lib/hooks/use-biometrics";
 import { CorrelationResult } from "@/lib/types";
 import { ChartSkeleton } from "@/components/shared/loading-skeleton";
+import {
+  TrendUpIcon,
+  TrendDownIcon,
+  ArrowRightIcon,
+  LightbulbIcon,
+  MagnifyingGlassIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 
 const metricLabels: Record<string, string> = {
   pain_severity: "Pain",
@@ -46,6 +54,15 @@ function InsightCard({
   const isPositive = val > 0;
   const strength = abs > 0.6 ? "Strong" : abs > 0.4 ? "Moderate" : "Notable";
 
+  const sigLabel = corr.p_value < 0.05
+    ? "Significant"
+    : corr.p_value < 0.1
+      ? "Suggestive"
+      : null;
+  const sigColor = corr.p_value < 0.05
+    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+    : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
+
   const description = isPositive
     ? `When ${(metricLabels[corr.metric_a] ?? corr.metric_a).toLowerCase()} is higher, ${(metricLabels[corr.metric_b] ?? corr.metric_b).toLowerCase()} tends to be higher too`
     : `When ${(metricLabels[corr.metric_a] ?? corr.metric_a).toLowerCase()} is higher, ${(metricLabels[corr.metric_b] ?? corr.metric_b).toLowerCase()} tends to be lower`;
@@ -72,13 +89,9 @@ function InsightCard({
           }`}
         >
           {isPositive ? (
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 17l5-5 5 5M7 7l5 5 5-5" />
-            </svg>
+            <TrendUpIcon className="h-3.5 w-3.5" weight="bold" />
           ) : (
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 7l5 5 5-5M7 17l5-5 5 5" />
-            </svg>
+            <TrendDownIcon className="h-3.5 w-3.5" weight="bold" />
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -86,9 +99,7 @@ function InsightCard({
             <span className="text-xs font-semibold">
               {metricLabels[corr.metric_a] ?? corr.metric_a}
             </span>
-            <svg className="h-3 w-3 text-muted-foreground shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <ArrowRightIcon className="h-3 w-3 text-muted-foreground shrink-0" weight="bold" />
             <span className="text-xs font-semibold">
               {metricLabels[corr.metric_b] ?? corr.metric_b}
             </span>
@@ -96,6 +107,21 @@ function InsightCard({
           <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">
             {description}
           </p>
+          <div className="flex items-center gap-1.5 mt-1">
+            {sigLabel && (
+              <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-medium border ${sigColor}`}>
+                {sigLabel}
+              </span>
+            )}
+            <span className="text-[9px] text-muted-foreground tabular-nums">
+              n={corr.sample_size}
+            </span>
+            {corr.sample_size < 14 && (
+              <span className="text-[9px] text-amber-500">
+                Log 14+ days for reliable patterns
+              </span>
+            )}
+          </div>
         </div>
         <div className="text-right shrink-0">
           <p
@@ -137,14 +163,13 @@ export default function CorrelationsPage() {
       .slice(0, 6);
   }, [correlations]);
 
-  const selectedCorrelation = useMemo(() => {
+  const selectedCorrelationResult = useMemo(() => {
     if (!selectedA || !selectedB || !correlations) return undefined;
-    const found = correlations.find(
+    return correlations.find(
       (c) =>
         (c.metric_a === selectedA && c.metric_b === selectedB) ||
         (c.metric_a === selectedB && c.metric_b === selectedA)
     );
-    return found?.correlation_coefficient;
   }, [selectedA, selectedB, correlations]);
 
   const scatterData = useMemo(() => {
@@ -216,7 +241,7 @@ export default function CorrelationsPage() {
       {/* === Section 1: At-a-glance patterns === */}
       {/* Trigger Breakdown + Weekly Rhythm side by side */}
       <motion.div variants={fadeUp} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-        <TriggerBreakdown logs={logs ?? []} />
+        <TriggerBreakdown logs={logs ?? []} contextual={contextual ?? []} />
         <WeeklyRhythm logs={logs ?? []} />
       </motion.div>
 
@@ -243,9 +268,7 @@ export default function CorrelationsPage() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="h-6 w-6 rounded-md bg-amber-500/10 flex items-center justify-center">
-                <svg className="h-3 w-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
+                <LightbulbIcon className="h-3 w-3 text-amber-500" weight="duotone" />
               </div>
               <div>
                 <h3 className="text-xs font-semibold">Strongest Connections</h3>
@@ -270,6 +293,10 @@ export default function CorrelationsPage() {
                 />
               ))}
             </div>
+            <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
+              Correlation values range from -1 to +1. Values closer to |1| indicate stronger relationships.
+              {" "}&quot;Significant&quot; means the pattern is unlikely due to chance (p&lt;0.05).
+            </p>
           </div>
         ) : null}
       </motion.div>
@@ -288,10 +315,7 @@ export default function CorrelationsPage() {
               <div className="p-4 sm:p-5 pb-0 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="M21 21l-4.35-4.35" />
-                    </svg>
+                    <MagnifyingGlassIcon className="h-4 w-4" weight="duotone" />
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold">
@@ -310,9 +334,7 @@ export default function CorrelationsPage() {
                   }}
                   className="h-7 w-7 rounded-lg bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors"
                 >
-                  <svg className="h-3.5 w-3.5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
+                  <XIcon className="h-3.5 w-3.5 text-muted-foreground" weight="bold" />
                 </button>
               </div>
               <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -320,7 +342,9 @@ export default function CorrelationsPage() {
                   metricA={selectedA}
                   metricB={selectedB}
                   data={scatterData}
-                  correlation={selectedCorrelation}
+                  correlation={selectedCorrelationResult?.correlation_coefficient}
+                  pValue={selectedCorrelationResult?.p_value}
+                  sampleSize={selectedCorrelationResult?.sample_size}
                 />
                 <LaggedCorrelationPanel
                   initialA={selectedA}

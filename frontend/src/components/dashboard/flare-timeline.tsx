@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { SymptomLog } from "@/lib/types";
 import { format, parseISO } from "date-fns";
+import { LightningIcon, CheckCircleIcon } from "@phosphor-icons/react";
 
 interface FlareTimelineProps {
   logs: SymptomLog[];
@@ -37,9 +38,7 @@ export function FlareTimeline({ logs }: FlareTimelineProps) {
       <div className="p-5 pb-0">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
-            <svg className="h-4 w-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </svg>
+            <LightningIcon className="h-4 w-4 text-rose-500" weight="duotone" />
           </div>
           <div>
             <h3 className="text-sm font-semibold">Flare Events</h3>
@@ -52,10 +51,7 @@ export function FlareTimeline({ logs }: FlareTimelineProps) {
         {flares.length === 0 ? (
           <div className="text-center py-6">
             <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-2">
-              <svg className="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                <path d="M22 4L12 14.01l-3-3" />
-              </svg>
+              <CheckCircleIcon className="h-5 w-5 text-emerald-500" weight="duotone" />
             </div>
             <p className="text-sm text-muted-foreground">No flare events recorded</p>
             <p className="text-xs text-muted-foreground mt-0.5">Keep tracking to identify patterns</p>

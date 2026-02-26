@@ -16,6 +16,7 @@ class ContextualData(TimestampMixin, Base):
     medication_change: Mapped[str | None] = mapped_column(Text, nullable=True)
     exercise_type: Mapped[str | None] = mapped_column(Text, nullable=True)
     exercise_rpe: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    diet_flags: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
         CheckConstraint(

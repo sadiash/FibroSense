@@ -11,6 +11,7 @@ class ContextualDataCreate(BaseModel):
     medication_change: str | None = None
     exercise_type: str | None = None
     exercise_rpe: int | None = Field(default=None, ge=1, le=10)
+    diet_flags: str | None = None
 
 
 class ContextualDataUpdate(BaseModel):
@@ -22,6 +23,7 @@ class ContextualDataUpdate(BaseModel):
     medication_change: str | None = None
     exercise_type: str | None = None
     exercise_rpe: int | None = Field(default=None, ge=1, le=10)
+    diet_flags: str | None = None
 
 
 class ContextualDataResponse(BaseModel):
@@ -34,6 +36,7 @@ class ContextualDataResponse(BaseModel):
     medication_change: str | None
     exercise_type: str | None
     exercise_rpe: int | None
+    diet_flags: str | None
     created_at: str
     updated_at: str
 
