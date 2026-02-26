@@ -1,4 +1,4 @@
-import os
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -11,11 +11,12 @@ class Settings(BaseSettings):
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        env_origins = os.getenv("CORS_ORIGINS")
-        if env_origins:
-            self.cors_origins = [o.strip() for o in env_origins.split(",")]
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            return [o.strip() for o in v.split(",")]
+        return v
 
 
 settings = Settings()
