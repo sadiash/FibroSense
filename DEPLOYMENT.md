@@ -1,18 +1,10 @@
 # FibroSense Deployment Guide
 
-Two services deployed:
-- **Frontend** (Next.js) → Vercel: https://frontend-pi-mauve-90.vercel.app
-- **Backend** (FastAPI) → Render: https://fibrosense-api.onrender.com
+Two services to deploy:
+- **Frontend** (Next.js) → Vercel
+- **Backend** (FastAPI) → Render
 
----
-
-## Live URLs
-
-| Service | URL |
-|---|---|
-| Frontend | https://frontend-pi-mauve-90.vercel.app |
-| Backend API | https://fibrosense-api.onrender.com |
-| Health Check | https://fibrosense-api.onrender.com/api/health |
+Deploy the backend first — the frontend needs the backend URL.
 
 ---
 
@@ -45,7 +37,7 @@ The frontend proxies all `/api/*` requests to the Render backend via Next.js rew
 |---|---|---|---|
 | `SECRET_KEY` | **Yes** | *(auto-generated)* | JWT signing key |
 | `DATABASE_URL` | **Yes** | `sqlite+aiosqlite:////data/fibrosense.db` | 4 slashes = absolute path on disk |
-| `CORS_ORIGINS` | **Yes** | `https://frontend-pi-mauve-90.vercel.app` | Allowed frontend origin |
+| `CORS_ORIGINS` | **Yes** | `https://your-app.vercel.app` | Allowed frontend origin |
 | `ENVIRONMENT` | **Yes** | `production` | Enables secure cookies |
 | `PYTHON_VERSION` | Yes | `3.12` | Render Python version |
 | `OURA_API_KEY` | No | `""` | Oura Ring API token |
@@ -55,7 +47,7 @@ The frontend proxies all `/api/*` requests to the Render backend via Next.js rew
 ### Verify
 
 ```bash
-curl https://fibrosense-api.onrender.com/api/health
+curl https://your-backend.onrender.com/api/health
 # {"status":"healthy"}
 ```
 
@@ -77,7 +69,7 @@ curl https://fibrosense-api.onrender.com/api/health
 
 | Variable | Required | Value | Description |
 |---|---|---|---|
-| `NEXT_PUBLIC_API_URL` | **Yes** | `https://fibrosense-api.onrender.com` | Backend API base URL |
+| `NEXT_PUBLIC_API_URL` | **Yes** | `https://your-backend.onrender.com` | Backend API base URL |
 
 ### Deploy via CLI
 

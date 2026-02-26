@@ -25,3 +25,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+if settings.is_production and settings.secret_key == "dev-only-change-me-in-production":
+    raise RuntimeError("SECRET_KEY must be set in production — do not use the default value")
