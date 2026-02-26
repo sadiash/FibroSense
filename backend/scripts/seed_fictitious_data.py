@@ -12,6 +12,7 @@ Usage:
 import argparse
 import json
 import math
+import os
 import random
 import sqlite3
 from datetime import date, datetime, timedelta
@@ -20,7 +21,18 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-DB_PATH = Path(__file__).resolve().parent.parent / "fibrosense.db"
+def _resolve_db_path() -> Path:
+    """Use DATABASE_URL env var (Render production) or fall back to local path."""
+    db_url = os.environ.get("DATABASE_URL", "")
+    if db_url.startswith("sqlite"):
+        # sqlite+aiosqlite:////data/fibrosense.db -> /data/fibrosense.db
+        path = db_url.split("///")[-1]
+        if path:
+            return Path(path)
+    return Path(__file__).resolve().parent.parent / "fibrosense.db"
+
+
+DB_PATH = _resolve_db_path()
 START_DATE = date(2025, 12, 1)
 END_DATE = date(2026, 2, 28)
 SEED = 42  # deterministic for reproducibility

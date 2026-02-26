@@ -297,6 +297,12 @@ export async function clearDemoData(): Promise<DemoDataClearResult> {
   return apiFetch<DemoDataClearResult>("/api/demo-data", { method: "DELETE" });
 }
 
+export async function seedDemoData(): Promise<{ status: string; message?: string }> {
+  return apiFetch<{ status: string; message?: string }>("/api/demo-data/seed", {
+    method: "POST",
+  });
+}
+
 // ─── Export ─────────────────────────────────────────────────────────────────
 
 export async function exportData(
