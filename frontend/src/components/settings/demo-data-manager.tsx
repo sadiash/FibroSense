@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,8 +18,14 @@ import {
   clearDemoData,
   type DemoDataStatus,
 } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
+
+const GUEST_EMAIL = "guest@fibrosense.app";
 
 export function DemoDataManager() {
+  const { user, logout } = useAuth();
+  const router = useRouter();
+  const isGuest = user?.email === GUEST_EMAIL;
   const [status, setStatus] = useState<DemoDataStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [clearing, setClearing] = useState(false);
@@ -48,6 +55,12 @@ export function DemoDataManager() {
     setClearing(true);
     setResult(null);
     try {
+      if (isGuest) {
+        // Guest users: sign out and go to register
+        await logout();
+        router.push("/register");
+        return;
+      }
       const res = await clearDemoData();
       if (res.status === "completed") {
         setResult({
@@ -92,8 +105,9 @@ export function DemoDataManager() {
           ) : status?.has_demo_data ? (
             <>
               <p className="text-xs text-muted-foreground">
-                Fictitious demo data is present in your database. Clear it
-                before tracking real data.
+                {isGuest
+                  ? "You're exploring as a guest with sample data. Ready to track your own health?"
+                  : "Fictitious demo data is present in your database. Clear it before tracking real data."}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary">
@@ -110,11 +124,11 @@ export function DemoDataManager() {
                 </Badge>
               </div>
               <Button
-                variant="destructive"
+                variant={isGuest ? "default" : "destructive"}
                 size="sm"
                 onClick={() => setShowConfirm(true)}
               >
-                Clear Demo Data
+                {isGuest ? "Create My Account" : "Clear Demo Data"}
               </Button>
             </>
           ) : (
@@ -143,20 +157,37 @@ export function DemoDataManager() {
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Clear all demo data?</DialogTitle>
+            <DialogTitle>
+              {isGuest ? "Ready to create your account?" : "Clear all demo data?"}
+            </DialogTitle>
             <DialogDescription asChild>
               <div className="space-y-3 pt-2">
-                <p>
-                  This will permanently delete {totalRecords} fictitious records
-                  (biometrics, symptom logs, contextual data, medications, and
-                  sync logs). Correlation cache will also be cleared. This
-                  action cannot be undone.
-                </p>
-                <p className="font-medium text-foreground">
-                  After clearing, you can start logging your own real data.
-                  Connect your Oura ring to sync biometrics, and use the daily
-                  log to track your symptoms.
-                </p>
+                {isGuest ? (
+                  <>
+                    <p>
+                      You&apos;ll be signed out of the guest account and taken to
+                      the registration page to create your own private account.
+                    </p>
+                    <p className="font-medium text-foreground">
+                      Your own account will start fresh — connect your Oura ring,
+                      set your location, and start tracking your real symptoms.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      This will permanently delete {totalRecords} fictitious records
+                      (biometrics, symptom logs, contextual data, medications, and
+                      sync logs). Correlation cache will also be cleared. This
+                      action cannot be undone.
+                    </p>
+                    <p className="font-medium text-foreground">
+                      After clearing, you can start logging your own real data.
+                      Connect your Oura ring to sync biometrics, and use the daily
+                      log to track your symptoms.
+                    </p>
+                  </>
+                )}
               </div>
             </DialogDescription>
           </DialogHeader>
@@ -166,14 +197,16 @@ export function DemoDataManager() {
               onClick={() => setShowConfirm(false)}
               disabled={clearing}
             >
-              Keep Demo Data
+              {isGuest ? "Keep Exploring" : "Keep Demo Data"}
             </Button>
             <Button
-              variant="destructive"
+              variant={isGuest ? "default" : "destructive"}
               onClick={handleClear}
               disabled={clearing}
             >
-              {clearing ? "Clearing..." : "Clear & Start Fresh"}
+              {clearing
+                ? (isGuest ? "Redirecting..." : "Clearing...")
+                : (isGuest ? "Sign Up Now" : "Clear & Start Fresh")}
             </Button>
           </DialogFooter>
         </DialogContent>
