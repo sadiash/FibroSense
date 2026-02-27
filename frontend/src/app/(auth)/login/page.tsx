@@ -15,7 +15,7 @@ const GUEST_EMAIL = "guest@fibrosense.app";
 const GUEST_PASSWORD = "TryFibroSense1!";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -55,7 +55,16 @@ export default function LoginPage() {
   async function handleGuestLogin() {
     setIsGuestLoading(true);
     try {
-      await login({ email: GUEST_EMAIL, password: GUEST_PASSWORD });
+      // Try login first; if account doesn't exist, register it
+      try {
+        await login({ email: GUEST_EMAIL, password: GUEST_PASSWORD });
+      } catch {
+        await register({
+          email: GUEST_EMAIL,
+          password: GUEST_PASSWORD,
+          full_name: "Guest Explorer",
+        });
+      }
       // Seed demo data if the account is empty (no-ops if data exists)
       try {
         await seedDemoData();
@@ -65,7 +74,7 @@ export default function LoginPage() {
     } catch {
       toast({
         title: "Guest access unavailable",
-        description: "The demo account is not set up yet. Please create an account instead.",
+        description: "Something went wrong. Please try again or create an account.",
         variant: "destructive",
       });
     } finally {
